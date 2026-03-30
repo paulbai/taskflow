@@ -1,0 +1,37 @@
+.inputWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-left: 2px;
+    font-family: var(--font-display);
+}
+
+.input {
+    background: var(--bg-raised);
+    border: 2px solid var(--border-default);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    width: 100%;
+    transition: all var(--duration-fast) ease;
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+    background: var(--bg-raised);
+}
+
+.input::placeholder {
+    color: var(--text-disabled);
+}

@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id             String       @id @default(cuid())
+  name           String
+  email          String       @unique
+  hashedPassword String
+  avatar         String?
+  createdAt      DateTime     @default(now())
+
+  ownedLists     List[]       @relation("ListOwner")
+  memberships    ListMember[]
+  createdTasks   Task[]       @relation("TaskCreator")
+  assignedTasks  Task[]       @relation("TaskAssignee")
+}
+
+model List {
+  id        String       @id @default(cuid())
+  name      String
+  icon      String       @default("📝")
+  createdAt DateTime     @default(now())
+
+  ownerId   String
+  owner     User         @relation("ListOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+
+  members   ListMember[]
+  tasks     Task[]
+
+  inviteCode String?     @unique
+}
+
+model ListMember {
+  id     String @id @default(cuid())
+  role   String @default("member") // "owner" | "member"
+
+  listId String
+  list   List   @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([listId, userId])
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  isCompleted Boolean   @default(false)
+  priority    String    @default("none") // "none" | "low" | "medium" | "high"
+  dueDate     String?
+  tags        String    @default("[]") // JSON array stored as string
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  listId      String
+  list        List      @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  createdById String
+  createdBy   User      @relation("TaskCreator", fields: [createdById], references: [id])
+
+  assigneeId  String?
+  assignee    User?     @relation("TaskAssignee", fields: [assigneeId], references: [id])
+
+  inviteCode  String?   @unique
+
+  subtasks    Subtask[]
+}
+
+model Subtask {
+  id          String  @id @default(cuid())
+  title       String
+  isCompleted Boolean @default(false)
+
+  taskId      String
+  task        Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}

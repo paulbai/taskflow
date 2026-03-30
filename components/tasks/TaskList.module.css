@@ -1,0 +1,210 @@
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ── Header ── */
+.header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.headerLeft {
+    display: flex;
+    flex-direction: column;
+}
+
+.listTitle {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+}
+
+.taskCount {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+.shareBtn {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-full);
+    border: none;
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--duration-fast) ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.shareBtn:hover {
+    color: var(--accent);
+    box-shadow: var(--shadow-md);
+}
+
+.sharePopup {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 8px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    width: 280px;
+    box-shadow: var(--shadow-lg);
+    z-index: 10;
+}
+
+.shareLabel {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.shareRow {
+    display: flex;
+    gap: 8px;
+}
+
+.code {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.copyBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.copyBtn:hover {
+    color: var(--accent);
+}
+
+/* ── Input ── */
+.inputForm {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.input {
+    flex: 1;
+    padding: 14px 18px;
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--border-subtle);
+    background: var(--bg-raised);
+    color: var(--text-primary);
+    font-size: 15px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    outline: none;
+    transition: border-color var(--duration-fast) ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.input:focus {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-glow);
+}
+
+.input::placeholder {
+    color: var(--text-disabled);
+}
+
+.addBtn {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    border: none;
+    background: var(--accent-gradient);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all var(--duration-fast) ease;
+    box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.addBtn:hover {
+    transform: scale(1.05);
+}
+
+.addBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ── Task List ── */
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.completedSection {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 2px solid var(--border-subtle);
+}
+
+.completedTitle {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
+    margin-bottom: 12px;
+    font-family: var(--font-display);
+}
+
+/* ── Empty State ── */
+.emptyState {
+    text-align: center;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.emptyIcon {
+    color: var(--card-yellow);
+    opacity: 0.7;
+}
+
+.emptyText {
+    color: var(--text-tertiary);
+    font-size: 16px;
+    font-weight: 600;
+    font-family: var(--font-display);
+}

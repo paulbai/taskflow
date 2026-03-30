@@ -1,0 +1,136 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.monthTitle {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.yearLabel {
+    color: var(--text-tertiary);
+    font-weight: 500;
+}
+
+.navGroup {
+    display: flex;
+    gap: 4px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.dayHeader {
+    text-align: center;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    padding: 8px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-family: var(--font-display);
+}
+
+.dayCell {
+    min-height: 90px;
+    background: var(--bg-raised);
+    border: 2px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    transition: all var(--duration-fast) ease;
+}
+
+.dayCell:hover {
+    border-color: var(--border-default);
+    box-shadow: var(--shadow-sm);
+}
+
+.empty {
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+.currentDay {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 1px var(--accent), 0 0 16px var(--accent-glow);
+    background: var(--accent-gradient-subtle);
+}
+
+.dateNumber {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 2px;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    font-family: var(--font-display);
+}
+
+.todayBadge {
+    background: var(--accent-gradient);
+    color: white;
+    font-weight: 800;
+}
+
+.taskDot {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-surface);
+    border-left: 3px solid transparent;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-weight: 500;
+    transition: background var(--duration-fast) ease;
+}
+
+.taskDot:hover {
+    background: var(--bg-hover);
+}
+
+.priority-high {
+    border-left-color: var(--color-high);
+}
+
+.priority-medium {
+    border-left-color: var(--color-medium);
+}
+
+.priority-low {
+    border-left-color: var(--color-low);
+}
+
+@media (max-width: 768px) {
+    .dayCell {
+        min-height: 60px;
+        padding: 4px;
+    }
+
+    .taskDot {
+        font-size: 9px;
+        padding: 1px 3px;
+    }
+}

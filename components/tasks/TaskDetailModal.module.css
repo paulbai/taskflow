@@ -1,0 +1,307 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.titleInput {
+    font-size: 22px;
+    font-weight: 800;
+    border: none;
+    background: transparent;
+    width: 100%;
+    color: var(--text-primary);
+    outline: none;
+    font-family: var(--font-display);
+    padding: 8px 0;
+    border-bottom: 2px solid var(--border-subtle);
+    transition: border-color var(--duration-fast) ease;
+}
+
+.titleInput:focus {
+    border-bottom-color: var(--accent);
+}
+
+/* ── Invite Code Section ── */
+.inviteSection {
+    background: var(--accent-gradient-subtle);
+    border: 2px solid var(--border-focus);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+}
+
+.inviteHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent-dark);
+    font-family: var(--font-display);
+    margin-bottom: 10px;
+}
+
+.inviteRow {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.inviteCode {
+    flex: 1;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    background: var(--bg-raised);
+    border: 2px solid var(--border-default);
+    font-size: 18px;
+    font-weight: 800;
+    font-family: var(--font-display);
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-align: center;
+}
+
+.copyButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: var(--accent-gradient);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: var(--font-display);
+    cursor: pointer;
+    transition: all 150ms ease;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+.copyButton:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+.inviteHint {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-family: var(--font-display);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ── Subtasks ── */
+.subtaskHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.subtaskCount {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-gradient-subtle);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+}
+
+.subtaskProgress {
+    width: 100%;
+    height: 4px;
+    background: var(--border-subtle);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.subtaskProgressBar {
+    height: 100%;
+    background: var(--accent-gradient);
+    border-radius: 2px;
+    transition: width 300ms ease;
+}
+
+.subtaskList {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.subtaskItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+    transition: all 150ms ease;
+}
+
+.subtaskItem:hover {
+    background: var(--bg-hover);
+}
+
+.subtaskDone .subtaskTitle {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+.subtaskCheck {
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    transition: color 150ms ease;
+}
+
+.subtaskDone .subtaskCheck {
+    color: var(--accent);
+}
+
+.subtaskTitle {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.3;
+}
+
+.subtaskDelete {
+    border: none;
+    background: transparent;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--text-disabled);
+    display: flex;
+    align-items: center;
+    border-radius: var(--radius-sm);
+    opacity: 0;
+    transition: all 150ms ease;
+}
+
+.subtaskItem:hover .subtaskDelete {
+    opacity: 1;
+}
+
+.subtaskDelete:hover {
+    color: var(--color-error);
+    background: rgba(240, 104, 104, 0.1);
+}
+
+.subtaskAdd {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.subtaskInput {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border-default);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 500;
+    outline: none;
+    transition: border-color 150ms ease;
+}
+
+.subtaskInput:focus {
+    border-color: var(--accent);
+}
+
+.subtaskInput::placeholder {
+    color: var(--text-disabled);
+}
+
+.subtaskAddBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: var(--accent-gradient);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 150ms ease;
+    box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+.subtaskAddBtn:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+.subtaskAddBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.priorityGroup {
+    display: flex;
+    gap: 8px;
+}
+
+.priorityBtn {
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border-default);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-display);
+    cursor: pointer;
+    transition: all var(--duration-fast) ease;
+}
+
+.priorityBtn:hover {
+    background: var(--bg-hover);
+}
+
+.priorityActive {
+    background: var(--bg-active);
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 2px solid var(--border-subtle);
+}
+
+.deleteButton {
+    margin-right: auto;
+}
