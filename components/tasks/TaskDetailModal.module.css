@@ -267,6 +267,221 @@
     transform: none;
 }
 
+/* ── Status ── */
+.statusGroup {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.statusBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border-default);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-display);
+    cursor: pointer;
+    transition: all var(--duration-fast) ease;
+}
+
+.statusBtn:hover {
+    background: var(--bg-hover);
+}
+
+.statusActive {
+    font-weight: 700;
+}
+
+.statusDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* ── Dates ── */
+.dateRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dateField {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dateLabel {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-disabled);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.dateInput {
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border-default);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--font-display);
+    outline: none;
+    width: 100%;
+    transition: border-color 150ms ease;
+}
+
+.dateInput:focus {
+    border-color: var(--accent);
+}
+
+.dateSep {
+    color: var(--text-disabled);
+    font-size: 16px;
+    margin-top: 18px;
+}
+
+/* ── Assignee ── */
+.assigneeDisplay {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+    border: 2px solid var(--border-default);
+}
+
+.assigneeAvatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--accent-gradient);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* ── Document Links ── */
+.linkHint {
+    font-size: 12px;
+    color: var(--text-disabled);
+    line-height: 1.4;
+    margin: -4px 0 4px;
+}
+
+.linkList {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.linkItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+    border: 2px solid var(--border-default);
+    transition: all 150ms ease;
+}
+
+.linkItem:hover {
+    border-color: var(--accent);
+    background: var(--bg-hover);
+}
+
+.linkIcon {
+    flex-shrink: 0;
+    color: var(--accent);
+}
+
+.linkUrl {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-dark);
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.linkUrl:hover {
+    text-decoration: underline;
+}
+
+.linkRemove {
+    border: none;
+    background: transparent;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--text-disabled);
+    display: flex;
+    align-items: center;
+    border-radius: var(--radius-sm);
+    opacity: 0;
+    transition: all 150ms ease;
+    flex-shrink: 0;
+}
+
+.linkItem:hover .linkRemove {
+    opacity: 1;
+}
+
+.linkRemove:hover {
+    color: var(--color-error);
+    background: rgba(240, 104, 104, 0.1);
+}
+
+.linkAdd {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.linkInput {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border-default);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 500;
+    outline: none;
+    transition: border-color 150ms ease;
+}
+
+.linkInput:focus {
+    border-color: var(--accent);
+}
+
+.linkInput::placeholder {
+    color: var(--text-disabled);
+}
+
+.linkUrlRow {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
 .priorityGroup {
     display: flex;
     gap: 8px;

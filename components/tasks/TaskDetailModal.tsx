@@ -3,8 +3,8 @@ import styles from './TaskDetailModal.module.css';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
-import { Task, Priority, Subtask } from '../../types';
-import { Trash2, Copy, Check, Users, Plus, X, CheckCircle2, Circle } from 'lucide-react';
+import { Task, Priority, TaskStatus, Subtask } from '../../types';
+import { Trash2, Copy, Check, Users, Plus, X, CheckCircle2, Circle, Calendar, Clock, Link2, ExternalLink, User } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface TaskDetailModalProps {
@@ -22,16 +22,26 @@ const priorityColors: Record<Priority, string> = {
     high: 'var(--color-high)',
 };
 
+const STATUS_OPTIONS: { key: TaskStatus; label: string; color: string }[] = [
+    { key: 'todo', label: 'To Do', color: '#f5a623' },
+    { key: 'in_progress', label: 'In Progress', color: '#5b8def' },
+    { key: 'done', label: 'Done', color: '#4c8c4a' },
+];
+
 export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: TaskDetailModalProps) {
     const [editedTask, setEditedTask] = useState<Task | null>(task);
     const [copied, setCopied] = useState(false);
     const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
     const [subtaskLoading, setSubtaskLoading] = useState(false);
+    const [newLinkUrl, setNewLinkUrl] = useState('');
+    const [newLinkTitle, setNewLinkTitle] = useState('');
 
     useEffect(() => {
         setEditedTask(task);
         setCopied(false);
         setNewSubtaskTitle('');
+        setNewLinkUrl('');
+        setNewLinkTitle('');
     }, [task]);
 
     if (!editedTask) return null;
@@ -45,12 +55,41 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
         setEditedTask({ ...editedTask, priority: p });
     };
 
+    const setStatus = (s: TaskStatus) => {
+        setEditedTask({ ...editedTask, status: s });
+    };
+
     const handleCopyCode = async () => {
         if (editedTask.inviteCode) {
             await navigator.clipboard.writeText(editedTask.inviteCode);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         }
+    };
+
+    // ── Links handlers ──
+    const links: { title?: string; url: string }[] = (() => {
+        if (Array.isArray(editedTask.links)) return editedTask.links as unknown as { title?: string; url: string }[];
+        if (typeof editedTask.links === 'string') {
+            try { return JSON.parse(editedTask.links); } catch { return []; }
+        }
+        return [];
+    })();
+
+    const handleAddLink = () => {
+        if (!newLinkUrl.trim()) return;
+        let url = newLinkUrl.trim();
+        if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+        const newLink = { title: newLinkTitle.trim() || undefined, url };
+        const updatedLinks = [...links, newLink];
+        setEditedTask({ ...editedTask, links: updatedLinks as unknown as string });
+        setNewLinkUrl('');
+        setNewLinkTitle('');
+    };
+
+    const handleRemoveLink = (index: number) => {
+        const updatedLinks = links.filter((_, i) => i !== index);
+        setEditedTask({ ...editedTask, links: updatedLinks as unknown as string });
     };
 
     // ── Subtask handlers ──
@@ -113,6 +152,67 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
                     onChange={(e) => setEditedTask({ ...editedTask, title: e.target.value })}
                     placeholder="Task Title"
                 />
+
+                {/* Status Section */}
+                <div className={styles.section}>
+                    <div className={styles.label}>Status</div>
+                    <div className={styles.statusGroup}>
+                        {STATUS_OPTIONS.map(s => (
+                            <button
+                                key={s.key}
+                                className={clsx(styles.statusBtn, editedTask.status === s.key && styles.statusActive)}
+                                style={{
+                                    borderColor: editedTask.status === s.key ? s.color : undefined,
+                                    color: editedTask.status === s.key ? s.color : undefined,
+                                    background: editedTask.status === s.key ? `${s.color}12` : undefined,
+                                }}
+                                onClick={() => setStatus(s.key)}
+                            >
+                                <span className={styles.statusDot} style={{ background: s.color }} />
+                                {s.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Dates Section */}
+                <div className={styles.section}>
+                    <div className={styles.label}><Calendar size={14} /> Dates</div>
+                    <div className={styles.dateRow}>
+                        <div className={styles.dateField}>
+                            <span className={styles.dateLabel}>Start</span>
+                            <input
+                                type="date"
+                                className={styles.dateInput}
+                                value={editedTask.startDate || ''}
+                                onChange={e => setEditedTask({ ...editedTask, startDate: e.target.value || undefined })}
+                            />
+                        </div>
+                        <div className={styles.dateSep}>&rarr;</div>
+                        <div className={styles.dateField}>
+                            <span className={styles.dateLabel}>Due</span>
+                            <input
+                                type="date"
+                                className={styles.dateInput}
+                                value={editedTask.dueDate || ''}
+                                onChange={e => setEditedTask({ ...editedTask, dueDate: e.target.value || undefined })}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Assignee display */}
+                {editedTask.assignee && (
+                    <div className={styles.section}>
+                        <div className={styles.label}><User size={14} /> Assigned To</div>
+                        <div className={styles.assigneeDisplay}>
+                            <div className={styles.assigneeAvatar}>
+                                {editedTask.assignee.name.charAt(0).toUpperCase()}
+                            </div>
+                            <span>{editedTask.assignee.name}</span>
+                        </div>
+                    </div>
+                )}
 
                 {/* Invite Code Section */}
                 {editedTask.inviteCode && (
@@ -191,6 +291,61 @@ export function TaskDetailModal({ task, isOpen, onClose, onSave, onDelete }: Tas
                         >
                             <Plus size={16} />
                         </button>
+                    </div>
+                </div>
+
+                {/* Document Links Section */}
+                <div className={styles.section}>
+                    <div className={styles.label}><Link2 size={14} /> Document Links</div>
+                    <p className={styles.linkHint}>Attach links to documents, files, or evidence of completed tasks.</p>
+
+                    {links.length > 0 && (
+                        <div className={styles.linkList}>
+                            {links.map((link, i) => (
+                                <div key={i} className={styles.linkItem}>
+                                    <ExternalLink size={14} className={styles.linkIcon} />
+                                    <a
+                                        href={link.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={styles.linkUrl}
+                                        onClick={e => e.stopPropagation()}
+                                    >
+                                        {link.title || link.url}
+                                    </a>
+                                    <button className={styles.linkRemove} onClick={() => handleRemoveLink(i)}>
+                                        <X size={14} />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    <div className={styles.linkAdd}>
+                        <input
+                            className={styles.linkInput}
+                            value={newLinkTitle}
+                            onChange={e => setNewLinkTitle(e.target.value)}
+                            placeholder="Link title (optional)"
+                            maxLength={200}
+                        />
+                        <div className={styles.linkUrlRow}>
+                            <input
+                                className={styles.linkInput}
+                                value={newLinkUrl}
+                                onChange={e => setNewLinkUrl(e.target.value)}
+                                placeholder="https://..."
+                                maxLength={2000}
+                                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddLink(); } }}
+                            />
+                            <button
+                                className={styles.subtaskAddBtn}
+                                onClick={handleAddLink}
+                                disabled={!newLinkUrl.trim()}
+                            >
+                                <Plus size={16} />
+                            </button>
+                        </div>
                     </div>
                 </div>
 

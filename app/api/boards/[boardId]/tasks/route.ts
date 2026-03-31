@@ -40,6 +40,8 @@ export async function GET(_req: Request, { params }: { params: { boardId: string
     const result = tasks.map(t => {
         let parsedTags: string[] = [];
         try { parsedTags = JSON.parse(t.tags); } catch { parsedTags = []; }
+        let parsedLinks: { title?: string; url: string }[] = [];
+        try { parsedLinks = JSON.parse(t.links); } catch { parsedLinks = []; }
         return {
             id: t.id,
             title: t.title,
@@ -49,6 +51,7 @@ export async function GET(_req: Request, { params }: { params: { boardId: string
             startDate: t.startDate,
             dueDate: t.dueDate,
             tags: parsedTags,
+            links: parsedLinks,
             createdAt: t.createdAt.getTime(),
             subtasks: t.subtasks,
             createdBy: t.createdBy,

@@ -61,6 +61,7 @@ model Task {
   startDate   String?
   dueDate     String?
   tags        String    @default("[]") // JSON array stored as string
+  links       String    @default("[]") // JSON array of {title, url} objects
   sortOrder   Int       @default(0)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

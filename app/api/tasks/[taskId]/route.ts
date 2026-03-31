@@ -83,6 +83,17 @@ export async function PATCH(req: Request, { params }: { params: { taskId: string
         }
         updateData.tags = JSON.stringify(body.tags);
     }
+    if (body.links !== undefined) {
+        if (!Array.isArray(body.links) || body.links.length > 20) {
+            return NextResponse.json({ error: 'Links must be an array of up to 20 items' }, { status: 400 });
+        }
+        for (const link of body.links) {
+            if (!link.url || typeof link.url !== 'string' || link.url.length > 2000) {
+                return NextResponse.json({ error: 'Each link must have a valid url (max 2000 chars)' }, { status: 400 });
+            }
+        }
+        updateData.links = JSON.stringify(body.links);
+    }
     if (body.assigneeId !== undefined) {
         // SECURITY: Verify assignee is a member of the list or workspace
         if (body.assigneeId) {
@@ -107,10 +118,13 @@ export async function PATCH(req: Request, { params }: { params: { taskId: string
 
     let parsedTags: string[] = [];
     try { parsedTags = JSON.parse(updated.tags); } catch { parsedTags = []; }
+    let parsedLinks: { title?: string; url: string }[] = [];
+    try { parsedLinks = JSON.parse(updated.links); } catch { parsedLinks = []; }
 
     return NextResponse.json({
         ...updated,
         tags: parsedTags,
+        links: parsedLinks,
         createdAt: updated.createdAt.getTime(),
     });
 }

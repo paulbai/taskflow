@@ -12,6 +12,7 @@ export interface Task {
     tags: string[];
     subtasks: Subtask[];
     description?: string;
+    links?: string;
     assigneeId?: string;
     assignee?: { id: string; name: string };
     createdBy?: { id: string; name: string };
