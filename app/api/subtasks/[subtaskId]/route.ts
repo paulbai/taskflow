@@ -6,13 +6,21 @@ import { prisma } from '@/lib/prisma';
 async function getSubtaskWithAuth(subtaskId: string, userId: string) {
     const subtask = await prisma.subtask.findUnique({
         where: { id: subtaskId },
-        include: { task: { include: { list: { include: { members: true } } } } },
+        include: {
+            task: {
+                include: {
+                    list: { include: { members: true } },
+                    board: { include: { workspace: { include: { members: true } } } },
+                },
+            },
+        },
     });
 
     if (!subtask) return { error: 'Subtask not found', status: 404 };
 
-    const isMember = subtask.task.list.members.some(m => m.userId === userId);
-    if (!isMember) return { error: 'Forbidden', status: 403 };
+    const isListMember = subtask.task.list?.members?.some(m => m.userId === userId) || false;
+    const isBoardMember = subtask.task.board?.workspace?.members?.some(m => m.userId === userId) || false;
+    if (!isListMember && !isBoardMember) return { error: 'Forbidden', status: 403 };
 
     return { subtask };
 }

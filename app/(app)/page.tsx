@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { TaskList } from '@/components/tasks/TaskList';
 import { CalendarView } from '@/components/calendar/CalendarView';
+import { WorkspaceView } from '@/components/workspace/WorkspaceView';
 import { Loader2, Timer as TimerIcon, Play, Pause, RotateCw, UserPlus, X } from 'lucide-react';
 import { Task } from '@/types';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -95,10 +96,11 @@ export default function Home() {
     const toggleTask = async (id: string) => {
         const task = tasks.find(t => t.id === id);
         if (!task) return;
+        const newStatus = task.status === 'done' ? 'todo' : 'done';
         const res = await fetch(`/api/tasks/${id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ isCompleted: !task.isCompleted }),
+            body: JSON.stringify({ status: newStatus }),
         });
         if (res.ok) {
             const updated = await res.json();
@@ -145,8 +147,8 @@ export default function Home() {
         setJoinLoading(false);
     };
 
-    const activeTasks = tasks.filter(t => !t.isCompleted);
-    const completedTasks = tasks.filter(t => t.isCompleted);
+    const activeTasks = tasks.filter(t => t.status !== 'done');
+    const completedTasks = tasks.filter(t => t.status === 'done');
 
     const getGreeting = () => {
         const hour = new Date().getHours();
@@ -275,6 +277,10 @@ export default function Home() {
                             onUpdateTask={updateTask}
                             onDeleteTask={deleteTask}
                         />
+                    )}
+
+                    {activeTab === 'boards' && (
+                        <WorkspaceView />
                     )}
 
                     {activeTab === 'calendar' && (

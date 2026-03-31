@@ -2,7 +2,7 @@
 
 import React from 'react';
 import styles from './BottomNav.module.css';
-import { Home, Calendar, Timer, FolderOpen } from 'lucide-react';
+import { Home, Calendar, Timer, FolderOpen, LayoutGrid } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useAppContext } from '../providers/AppContext';
 
@@ -15,6 +15,7 @@ export function BottomNav({ onListsOpen }: BottomNavProps) {
 
     const tabs = [
         { id: 'home' as const, icon: Home, label: 'Home' },
+        { id: 'boards' as const, icon: LayoutGrid, label: 'Boards' },
         { id: 'calendar' as const, icon: Calendar, label: 'Calendar' },
         { id: 'timer' as const, icon: Timer, label: 'Focus' },
     ];

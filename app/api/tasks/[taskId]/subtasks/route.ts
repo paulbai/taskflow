@@ -14,15 +14,19 @@ export async function POST(req: Request, { params }: { params: { taskId: string 
 
     const task = await prisma.task.findUnique({
         where: { id: taskId },
-        include: { list: { include: { members: true } } },
+        include: {
+            list: { include: { members: true } },
+            board: { include: { workspace: { include: { members: true } } } },
+        },
     });
 
     if (!task) {
         return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
-    const isMember = task.list.members.some(m => m.userId === userId);
-    if (!isMember) {
+    const isListMember = task.list?.members?.some(m => m.userId === userId) || false;
+    const isBoardMember = task.board?.workspace?.members?.some(m => m.userId === userId) || false;
+    if (!isListMember && !isBoardMember) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

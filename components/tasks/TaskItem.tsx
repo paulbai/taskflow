@@ -22,15 +22,15 @@ interface TaskItemProps {
 }
 
 export function TaskItem({ task, index, onToggle, onClick }: TaskItemProps) {
-    const hasColor = task.priority !== 'none' || !task.isCompleted;
+    const hasColor = task.priority !== 'none' || task.status !== 'done';
     const colorIndex = index % CARD_COLORS.length;
-    const isColored = hasColor && !task.isCompleted;
+    const isColored = hasColor && task.status !== 'done';
 
     return (
         <div
             className={clsx(
                 styles.taskItem,
-                task.isCompleted && styles.completed,
+                task.status === 'done' && styles.completed,
                 isColored && styles.colored
             )}
             style={isColored ? { background: CARD_COLORS[colorIndex].bg } : undefined}
@@ -38,7 +38,7 @@ export function TaskItem({ task, index, onToggle, onClick }: TaskItemProps) {
         >
             <div onClick={(e) => e.stopPropagation()} className={styles.checkWrap}>
                 <Checkbox
-                    checked={task.isCompleted}
+                    checked={task.status === 'done'}
                     onChange={() => onToggle(task.id)}
                     colored={isColored}
                 />
@@ -68,7 +68,7 @@ export function TaskItem({ task, index, onToggle, onClick }: TaskItemProps) {
                 )}
             </div>
 
-            {task.priority !== 'none' && !task.isCompleted && (
+            {task.priority !== 'none' && task.status !== 'done' && (
                 <span className={clsx(styles.priorityDot, styles[`priority-${task.priority}`])} />
             )}
 

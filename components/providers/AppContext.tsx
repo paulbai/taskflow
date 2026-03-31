@@ -15,14 +15,16 @@ interface ListData {
     members: { id: string; name: string; email: string; role: string }[];
 }
 
+type TabType = 'home' | 'boards' | 'calendar' | 'timer' | 'settings';
+
 interface AppContextType {
     lists: ListData[];
     activeListId: string;
     activeList: ListData | null;
     setActiveListId: (id: string) => void;
     refreshLists: () => Promise<void>;
-    activeTab: 'home' | 'calendar' | 'timer' | 'settings';
-    setActiveTab: (tab: 'home' | 'calendar' | 'timer' | 'settings') => void;
+    activeTab: TabType;
+    setActiveTab: (tab: TabType) => void;
 }
 
 const AppContext = createContext<AppContextType>({
@@ -41,7 +43,7 @@ export function AppContextProvider({ children }: { children: React.ReactNode }) 
     const { data: session } = useSession();
     const [lists, setLists] = useState<ListData[]>([]);
     const [activeListId, setActiveListId] = useState('');
-    const [activeTab, setActiveTab] = useState<'home' | 'calendar' | 'timer' | 'settings'>('home');
+    const [activeTab, setActiveTab] = useState<TabType>('home');
 
     const refreshLists = useCallback(async () => {
         if (!session?.user) return;

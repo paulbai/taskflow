@@ -45,8 +45,8 @@ export function TaskList({ tasks, onAddTask, onToggleTask, onUpdateTask, onDelet
         }
     };
 
-    const activeTasks = tasks.filter(t => !t.isCompleted);
-    const completedTasks = tasks.filter(t => t.isCompleted);
+    const activeTasks = tasks.filter(t => t.status !== 'done');
+    const completedTasks = tasks.filter(t => t.status === 'done');
 
     return (
         <div className={styles.container}>

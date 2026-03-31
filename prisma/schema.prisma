@@ -15,10 +15,13 @@ model User {
   avatar         String?
   createdAt      DateTime     @default(now())
 
-  ownedLists     List[]       @relation("ListOwner")
-  memberships    ListMember[]
-  createdTasks   Task[]       @relation("TaskCreator")
-  assignedTasks  Task[]       @relation("TaskAssignee")
+  ownedLists           List[]             @relation("ListOwner")
+  memberships          ListMember[]
+  createdTasks         Task[]             @relation("TaskCreator")
+  assignedTasks        Task[]             @relation("TaskAssignee")
+  ownedWorkspaces      Workspace[]        @relation("WorkspaceOwner")
+  workspaceMemberships WorkspaceMember[]
+  createdBoards        Board[]            @relation("BoardCreator")
 }
 
 model List {
@@ -53,16 +56,20 @@ model Task {
   id          String    @id @default(cuid())
   title       String
   description String?
-  isCompleted Boolean   @default(false)
+  status      String    @default("todo") // "todo" | "in_progress" | "done"
   priority    String    @default("none") // "none" | "low" | "medium" | "high"
+  startDate   String?
   dueDate     String?
   tags        String    @default("[]") // JSON array stored as string
   sortOrder   Int       @default(0)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  listId      String
-  list        List      @relation(fields: [listId], references: [id], onDelete: Cascade)
+  listId      String?
+  list        List?     @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  boardId     String?
+  board       Board?    @relation(fields: [boardId], references: [id])
 
   createdById String
   createdBy   User      @relation("TaskCreator", fields: [createdById], references: [id])
@@ -82,4 +89,50 @@ model Subtask {
 
   taskId      String
   task        Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model Workspace {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   @default("team") // "company" | "family" | "team" | "other"
+  description String?
+  createdAt   DateTime @default(now())
+
+  ownerId     String
+  owner       User     @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+
+  members     WorkspaceMember[]
+  boards      Board[]
+
+  inviteCode  String?  @unique
+}
+
+model WorkspaceMember {
+  id     String @id @default(cuid())
+  role   String @default("member") // "owner" | "admin" | "member"
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+}
+
+model Board {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  createdById String
+  createdBy   User     @relation("BoardCreator", fields: [createdById], references: [id])
+
+  tasks       Task[]
+
+  inviteCode  String?  @unique
 }

@@ -14,15 +14,20 @@ export async function PATCH(req: Request, { params }: { params: { taskId: string
 
     const task = await prisma.task.findUnique({
         where: { id: taskId },
-        include: { list: { include: { members: true } } },
+        include: {
+            list: { include: { members: true } },
+            board: { include: { workspace: { include: { members: true } } } },
+        },
     });
 
     if (!task) {
         return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
-    const isMember = task.list.members.some(m => m.userId === userId);
-    if (!isMember) {
+    // Check access via list OR board membership
+    const isListMember = task.list?.members?.some(m => m.userId === userId) || false;
+    const isBoardMember = task.board?.workspace?.members?.some(m => m.userId === userId) || false;
+    if (!isListMember && !isBoardMember) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -42,11 +47,22 @@ export async function PATCH(req: Request, { params }: { params: { taskId: string
         }
         updateData.description = body.description || null;
     }
-    if (body.isCompleted !== undefined) {
-        if (typeof body.isCompleted !== 'boolean') {
-            return NextResponse.json({ error: 'isCompleted must be a boolean' }, { status: 400 });
+    if (body.status !== undefined) {
+        const validStatuses = ['todo', 'in_progress', 'done'];
+        if (!validStatuses.includes(body.status)) {
+            return NextResponse.json({ error: 'Status must be todo, in_progress, or done' }, { status: 400 });
         }
-        updateData.isCompleted = body.isCompleted;
+        updateData.status = body.status;
+    }
+    // Backward compat: isCompleted maps to status
+    if (body.isCompleted !== undefined) {
+        updateData.status = body.isCompleted ? 'done' : 'todo';
+    }
+    if (body.startDate !== undefined) {
+        if (body.startDate !== null && (typeof body.startDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(body.startDate))) {
+            return NextResponse.json({ error: 'startDate must be YYYY-MM-DD format or null' }, { status: 400 });
+        }
+        updateData.startDate = body.startDate || null;
     }
     if (body.priority !== undefined) {
         const validPriorities = ['none', 'low', 'medium', 'high'];
@@ -68,11 +84,12 @@ export async function PATCH(req: Request, { params }: { params: { taskId: string
         updateData.tags = JSON.stringify(body.tags);
     }
     if (body.assigneeId !== undefined) {
-        // SECURITY: Verify assignee is a member of the task's list
+        // SECURITY: Verify assignee is a member of the list or workspace
         if (body.assigneeId) {
-            const assigneeIsMember = task.list.members.some(m => m.userId === body.assigneeId);
-            if (!assigneeIsMember) {
-                return NextResponse.json({ error: 'Assignee must be a list member' }, { status: 403 });
+            const isListAssignee = task.list?.members?.some(m => m.userId === body.assigneeId) || false;
+            const isWorkspaceAssignee = task.board?.workspace?.members?.some(m => m.userId === body.assigneeId) || false;
+            if (!isListAssignee && !isWorkspaceAssignee) {
+                return NextResponse.json({ error: 'Assignee must be a member' }, { status: 403 });
             }
         }
         updateData.assigneeId = body.assigneeId || null;
@@ -109,15 +126,19 @@ export async function DELETE(_req: Request, { params }: { params: { taskId: stri
 
     const task = await prisma.task.findUnique({
         where: { id: taskId },
-        include: { list: { include: { members: true } } },
+        include: {
+            list: { include: { members: true } },
+            board: { include: { workspace: { include: { members: true } } } },
+        },
     });
 
     if (!task) {
         return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
-    const isMember = task.list.members.some(m => m.userId === userId);
-    if (!isMember) {
+    const isListMember = task.list?.members?.some(m => m.userId === userId) || false;
+    const isBoardMember = task.board?.workspace?.members?.some(m => m.userId === userId) || false;
+    if (!isListMember && !isBoardMember) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
