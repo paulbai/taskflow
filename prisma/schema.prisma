@@ -50,6 +50,7 @@ model ListMember {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([listId, userId])
+  @@index([userId])
 }
 
 model Task {
@@ -81,6 +82,12 @@ model Task {
   inviteCode  String?   @unique
 
   subtasks    Subtask[]
+
+  @@index([listId])
+  @@index([boardId])
+  @@index([createdById])
+  @@index([assigneeId])
+  @@index([status])
 }
 
 model Subtask {
@@ -119,6 +126,7 @@ model WorkspaceMember {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([workspaceId, userId])
+  @@index([userId])
 }
 
 model Board {

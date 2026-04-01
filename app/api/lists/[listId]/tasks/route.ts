@@ -29,6 +29,7 @@ export async function GET(_req: Request, { params }: { params: { listId: string 
             assignee: { select: { id: true, name: true } },
         },
         orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
+        take: 200,
     });
 
     const result = tasks.map(t => {
