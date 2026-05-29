@@ -105,11 +105,7 @@
     transform: translateY(-1px);
 }
 
-@media (min-width: 768px) {
-    .joinTaskBtn {
-        max-width: 640px;
-    }
-}
+/* join button: full width on all screens */
 
 /* ── Join Task Modal ── */
 .joinOverlay {
