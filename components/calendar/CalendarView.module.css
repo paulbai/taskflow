@@ -123,7 +123,7 @@
     border-left-color: var(--color-low);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .dayCell {
         min-height: 60px;
         padding: 4px;
@@ -132,5 +132,40 @@
     .taskDot {
         font-size: 9px;
         padding: 1px 3px;
+    }
+}
+
+@media (min-width: 768px) {
+    .grid {
+        gap: 6px;
+    }
+
+    .dayCell {
+        min-height: 100px;
+        padding: 10px;
+    }
+
+    .monthTitle {
+        font-size: 26px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid {
+        gap: 8px;
+    }
+
+    .dayCell {
+        min-height: 120px;
+        padding: 12px;
+    }
+
+    .taskDot {
+        font-size: 12px;
+        padding: 3px 8px;
+    }
+
+    .monthTitle {
+        font-size: 28px;
     }
 }

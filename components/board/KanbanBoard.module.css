@@ -96,6 +96,26 @@
     scroll-snap-align: start;
 }
 
+@media (min-width: 768px) {
+    .columns {
+        gap: 16px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .columns {
+        gap: 20px;
+        overflow-x: visible;
+        scroll-snap-type: none;
+    }
+
+    .column {
+        min-width: 0;
+        max-width: none;
+        flex: 1;
+    }
+}
+
 .columnHeader {
     display: flex;
     align-items: center;
@@ -396,14 +416,43 @@
     border-radius: var(--radius-lg);
 }
 
-/* ── Mobile: stack columns vertically ── */
-@media (max-width: 768px) {
+@media (min-width: 768px) {
+    .inviteBar {
+        padding: 12px 20px;
+    }
+
+    .inviteCode {
+        font-size: 16px;
+    }
+
+    .card {
+        padding: 16px;
+    }
+
+    .cardTitle {
+        font-size: 15px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .columnHeader {
+        padding: 12px 14px;
+    }
+
+    .columnTitle {
+        font-size: 15px;
+    }
+}
+
+/* ── Mobile: scroll horizontally with snap ── */
+@media (max-width: 767px) {
     .columns {
-        flex-direction: column;
+        scroll-snap-type: x mandatory;
     }
 
     .column {
-        min-width: 100%;
-        max-width: 100%;
+        min-width: 85vw;
+        max-width: 85vw;
+        flex-shrink: 0;
     }
 }

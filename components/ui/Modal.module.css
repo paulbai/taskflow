@@ -69,6 +69,13 @@
     color: var(--color-error);
 }
 
+@media (min-width: 768px) {
+    .modal {
+        max-width: 560px;
+        padding: 32px 28px;
+    }
+}
+
 @keyframes fadeIn {
     to { opacity: 1; }
 }

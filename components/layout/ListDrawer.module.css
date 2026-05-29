@@ -253,3 +253,18 @@
     color: var(--color-error);
     background: rgba(240, 104, 104, 0.1);
 }
+
+@media (min-width: 768px) {
+    .drawer {
+        left: auto;
+        right: 0;
+        width: 400px;
+        border-radius: var(--radius-2xl) 0 0 0;
+    }
+}
+
+@media (min-width: 1024px) {
+    .drawer {
+        width: 440px;
+    }
+}

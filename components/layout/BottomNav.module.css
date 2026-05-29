@@ -66,3 +66,36 @@
     font-family: var(--font-display);
     letter-spacing: 0.02em;
 }
+
+@media (min-width: 768px) {
+    .inner {
+        max-width: 560px;
+        padding: 10px 16px;
+        gap: 8px;
+    }
+
+    .tab {
+        padding: 8px 20px;
+    }
+
+    .label {
+        font-size: 11px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .inner {
+        max-width: 640px;
+        padding: 10px 24px;
+    }
+
+    .tab {
+        flex-direction: row;
+        gap: 8px;
+        padding: 10px 24px;
+    }
+
+    .label {
+        font-size: 12px;
+    }
+}

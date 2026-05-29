@@ -143,3 +143,26 @@
 .completed .tag {
     opacity: 0.5;
 }
+
+@media (min-width: 768px) {
+    .taskItem {
+        padding: 16px 18px;
+    }
+
+    .title {
+        font-size: 15px;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: unset;
+    }
+}
+
+@media (min-width: 1024px) {
+    .taskItem {
+        padding: 18px 20px;
+    }
+
+    .title {
+        font-size: 16px;
+    }
+}

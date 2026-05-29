@@ -157,3 +157,19 @@
         box-shadow: 0 0 32px var(--accent-glow), var(--shadow-lg);
     }
 }
+
+@media (min-width: 768px) {
+    .container {
+        right: 24px;
+    }
+
+    .panel {
+        width: 320px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .container {
+        right: 32px;
+    }
+}
