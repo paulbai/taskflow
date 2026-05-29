@@ -5,26 +5,31 @@ import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
 
 export async function POST(_req: Request, { params }: { params: { listId: string } }) {
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const userId = (session.user as { id: string }).id;
+        const { listId } = params;
+
+        const list = await prisma.list.findUnique({ where: { id: listId } });
+
+        if (!list || list.ownerId !== userId) {
+            return NextResponse.json({ error: 'Only the owner can generate invite links' }, { status: 403 });
+        }
+
+        const inviteCode = crypto.randomBytes(6).toString('hex');
+
+        await prisma.list.update({
+            where: { id: listId },
+            data: { inviteCode },
+        });
+
+        return NextResponse.json({ inviteCode });
+    } catch (error) {
+        console.error('POST /api/lists/[listId]/invite error:', error);
+        return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
     }
-
-    const userId = (session.user as { id: string }).id;
-    const { listId } = params;
-
-    const list = await prisma.list.findUnique({ where: { id: listId } });
-
-    if (!list || list.ownerId !== userId) {
-        return NextResponse.json({ error: 'Only the owner can generate invite links' }, { status: 403 });
-    }
-
-    const inviteCode = crypto.randomBytes(6).toString('hex');
-
-    await prisma.list.update({
-        where: { id: listId },
-        data: { inviteCode },
-    });
-
-    return NextResponse.json({ inviteCode });
 }

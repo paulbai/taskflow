@@ -1,26 +1,78 @@
 /**
- * Simple in-memory rate limiter for API routes.
- * For production at scale, consider Redis-based solutions (e.g. @upstash/ratelimit).
+ * Rate limiter with Upstash Redis for production (serverless-safe)
+ * and in-memory fallback for local development.
+ *
+ * Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN env vars
+ * to enable Redis-backed rate limiting in production.
  */
+
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+
+// ── Redis-backed rate limiter (production) ──────────────────────
+
+let redisRatelimit: Ratelimit | null = null;
+
+if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+    const redis = new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
+
+    redisRatelimit = new Ratelimit({
+        redis,
+        // Default: 10 requests per 60 seconds using sliding window
+        limiter: Ratelimit.slidingWindow(10, '60 s'),
+        analytics: true,
+        prefix: 'taskflow-rl',
+    });
+}
+
+// ── In-memory fallback (local dev only) ─────────────────────────
 
 interface RateLimitEntry {
     count: number;
     resetTime: number;
 }
 
-const store = new Map<string, RateLimitEntry>();
+const memoryStore = new Map<string, RateLimitEntry>();
 
 // Clean up expired entries every 5 minutes
-setInterval(() => {
-    const now = Date.now();
-    const keys = Array.from(store.keys());
-    for (const key of keys) {
-        const entry = store.get(key);
-        if (entry && now > entry.resetTime) {
-            store.delete(key);
+if (typeof setInterval !== 'undefined') {
+    setInterval(() => {
+        const now = Date.now();
+        const keys = Array.from(memoryStore.keys());
+        for (const key of keys) {
+            const entry = memoryStore.get(key);
+            if (entry && now > entry.resetTime) {
+                memoryStore.delete(key);
+            }
         }
+    }, 5 * 60 * 1000);
+}
+
+function memoryRateLimit(
+    identifier: string,
+    maxRequests: number,
+    windowMs: number
+): { success: boolean; remaining: number } {
+    const now = Date.now();
+    const entry = memoryStore.get(identifier);
+
+    if (!entry || now > entry.resetTime) {
+        memoryStore.set(identifier, { count: 1, resetTime: now + windowMs });
+        return { success: true, remaining: maxRequests - 1 };
     }
-}, 5 * 60 * 1000);
+
+    if (entry.count >= maxRequests) {
+        return { success: false, remaining: 0 };
+    }
+
+    entry.count++;
+    return { success: true, remaining: maxRequests - entry.count };
+}
+
+// ── Public API ──────────────────────────────────────────────────
 
 export interface RateLimitConfig {
     /** Max requests allowed in the window */
@@ -29,24 +81,23 @@ export interface RateLimitConfig {
     windowMs: number;
 }
 
-export function rateLimit(
+/**
+ * Rate limit a request by identifier.
+ * Uses Upstash Redis in production, falls back to in-memory for local dev.
+ */
+export async function rateLimit(
     identifier: string,
     config: RateLimitConfig = { maxRequests: 10, windowMs: 60_000 }
-): { success: boolean; remaining: number } {
-    const now = Date.now();
-    const entry = store.get(identifier);
-
-    if (!entry || now > entry.resetTime) {
-        store.set(identifier, { count: 1, resetTime: now + config.windowMs });
-        return { success: true, remaining: config.maxRequests - 1 };
+): Promise<{ success: boolean; remaining: number }> {
+    // Use Redis in production
+    if (redisRatelimit) {
+        const key = `${identifier}:${config.maxRequests}:${config.windowMs}`;
+        const result = await redisRatelimit.limit(key);
+        return { success: result.success, remaining: result.remaining };
     }
 
-    if (entry.count >= config.maxRequests) {
-        return { success: false, remaining: 0 };
-    }
-
-    entry.count++;
-    return { success: true, remaining: config.maxRequests - entry.count };
+    // Fallback to in-memory for local development
+    return memoryRateLimit(identifier, config.maxRequests, config.windowMs);
 }
 
 /**
