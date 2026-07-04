@@ -25,6 +25,7 @@ model User {
   createdPages         Page[]             @relation("PageCreator")
   comments             Comment[]
   notifications        Notification[]
+  passwordResetTokens  PasswordResetToken[]
 }
 
 model List {
@@ -243,4 +244,17 @@ model Notification {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, isRead])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique // sha256 of the raw token
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

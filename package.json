@@ -26,7 +26,8 @@
     "next-auth": "^4.24.13",
     "prisma": "^7.5.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "resend": "^6.17.1"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",

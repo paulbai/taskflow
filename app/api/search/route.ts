@@ -5,6 +5,8 @@ import { prisma } from '@/lib/prisma';
 import { getWorkspaceMembership, safeJsonParse } from '@/lib/office';
 import type { DbColumn } from '@/lib/office-types';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
     try {
         const session = await getServerSession(authOptions);

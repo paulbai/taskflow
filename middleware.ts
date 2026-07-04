@@ -9,6 +9,6 @@ export default withAuth({
 export const config = {
     matcher: [
         // Protect all app routes except auth pages and API
-        '/((?!api|_next/static|_next/image|favicon.ico|icons|manifest.json|sw.js|workbox-.*|signin|signup).*)',
+        '/((?!api|_next/static|_next/image|favicon.ico|icons|manifest.json|sw.js|workbox-.*|signin|signup|forgot-password|reset-password|offline).*)',
     ],
 };

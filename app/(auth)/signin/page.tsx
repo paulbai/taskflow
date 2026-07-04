@@ -86,6 +86,12 @@ export default function SignInPage() {
                 </form>
 
                 <p className={styles.footerText}>
+                    <a href="/forgot-password" className={styles.link}>
+                        Forgot your password?
+                    </a>
+                </p>
+
+                <p className={styles.footerText}>
                     Don&apos;t have an account?{' '}
                     <a href="/signup" className={styles.link}>
                         Sign up <ArrowRight size={14} />
