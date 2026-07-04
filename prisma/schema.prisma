@@ -22,6 +22,9 @@ model User {
   ownedWorkspaces      Workspace[]        @relation("WorkspaceOwner")
   workspaceMemberships WorkspaceMember[]
   createdBoards        Board[]            @relation("BoardCreator")
+  createdPages         Page[]             @relation("PageCreator")
+  comments             Comment[]
+  notifications        Notification[]
 }
 
 model List {
@@ -104,6 +107,8 @@ model Workspace {
   name        String
   type        String   @default("team") // "company" | "family" | "team" | "other"
   description String?
+  slug        String?  @unique
+  iconEmoji   String   @default("🏢")
   createdAt   DateTime @default(now())
 
   ownerId     String
@@ -111,6 +116,8 @@ model Workspace {
 
   members     WorkspaceMember[]
   boards      Board[]
+  pages       Page[]
+  databases   Database[]
 
   inviteCode  String?  @unique
 }
@@ -144,4 +151,96 @@ model Board {
   tasks       Task[]
 
   inviteCode  String?  @unique
+}
+
+// ── Office OS models ────────────────────────────────────────────
+
+model Page {
+  id          String    @id @default(cuid())
+  workspaceId String
+  parentId    String?
+  title       String    @default("Untitled")
+  iconEmoji   String?
+  coverUrl    String?
+  content     String? // Block-based content stored as JSON string
+  isPublic    Boolean   @default(false)
+  isArchived  Boolean   @default(false)
+  isFavorite  Boolean   @default(false)
+  isPrivate   Boolean   @default(false)
+  position    Int       @default(0)
+  createdById String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  parent      Page?     @relation("PageChildren", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Page[]    @relation("PageChildren")
+  comments    Comment[]
+  createdBy   User      @relation("PageCreator", fields: [createdById], references: [id])
+
+  @@index([workspaceId])
+  @@index([parentId])
+  @@index([createdById])
+}
+
+model Database {
+  id          String        @id @default(cuid())
+  workspaceId String
+  title       String
+  iconEmoji   String?
+  schema      String // JSON array of property definitions
+  defaultView String        @default("table") // "table" | "board" | "calendar" | "gallery" | "list"
+  isTaskDb    Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  rows        DatabaseRow[]
+
+  @@index([workspaceId])
+}
+
+model DatabaseRow {
+  id         String   @id @default(cuid())
+  databaseId String
+  data       String // JSON key-value pairs matching schema
+  position   Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  database   Database @relation(fields: [databaseId], references: [id], onDelete: Cascade)
+
+  @@index([databaseId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  pageId    String
+  userId    String
+  parentId  String?
+  content   String
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  page      Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("CommentReplies")
+
+  @@index([pageId])
+  @@index([userId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String // "mention" | "comment" | "assigned" | "invited"
+  message   String
+  linkUrl   String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
 }
