@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { ensureWorkspaceSlug } from '@/lib/office';
 import crypto from 'crypto';
 
 export async function GET() {
@@ -22,11 +23,18 @@ export async function GET() {
             orderBy: { createdAt: 'desc' },
         });
 
-        const result = workspaces.map(w => ({
+        // Lazily generate slugs for workspaces created before the Office OS upgrade
+        const slugs = await Promise.all(
+            workspaces.map(w => ensureWorkspaceSlug(w.id, w.name, w.slug))
+        );
+
+        const result = workspaces.map((w, i) => ({
             id: w.id,
             name: w.name,
             type: w.type,
             description: w.description,
+            slug: slugs[i],
+            iconEmoji: w.iconEmoji,
             ownerId: w.ownerId,
             inviteCode: w.ownerId === userId ? w.inviteCode : undefined,
             createdAt: w.createdAt.toISOString(),
@@ -97,11 +105,15 @@ export async function POST(req: Request) {
             },
         });
 
+        const slug = await ensureWorkspaceSlug(workspace.id, workspace.name, workspace.slug);
+
         return NextResponse.json({
             id: workspace.id,
             name: workspace.name,
             type: workspace.type,
             description: workspace.description,
+            slug,
+            iconEmoji: workspace.iconEmoji,
             ownerId: workspace.ownerId,
             inviteCode: workspace.inviteCode,
             createdAt: workspace.createdAt.toISOString(),

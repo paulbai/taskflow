@@ -1,0 +1,225 @@
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    background: var(--bg-glass-heavy);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.menuBtn {
+    display: none;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.menuBtn:hover {
+    background: var(--bg-hover);
+}
+
+@media (max-width: 767px) {
+    .menuBtn {
+        display: flex;
+    }
+}
+
+.breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    color: var(--text-tertiary);
+    font-weight: 600;
+}
+
+.crumb {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-body);
+    padding: 4px 6px;
+    border-radius: var(--radius-sm);
+}
+
+.crumb:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.crumbCurrent {
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.crumbSep {
+    color: var(--text-disabled);
+    flex-shrink: 0;
+}
+
+.right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.saveStatus {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    font-weight: 600;
+    margin-right: 4px;
+    white-space: nowrap;
+}
+
+.iconBtn {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: all var(--duration-fast) ease;
+}
+
+.iconBtn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 15px;
+    height: 15px;
+    border-radius: var(--radius-full);
+    background: var(--color-error);
+    color: white;
+    font-size: 9px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+}
+
+.avatarStack {
+    display: flex;
+    align-items: center;
+    margin-right: 4px;
+}
+
+.avatarStack > * {
+    margin-left: -8px;
+    border: 2px solid var(--bg-raised);
+}
+
+.avatarStack > *:first-child {
+    margin-left: 0;
+}
+
+.avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: var(--radius-full);
+    background: var(--accent-gradient);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    font-family: var(--font-display);
+    flex-shrink: 0;
+    cursor: default;
+}
+
+.avatarMore {
+    background: var(--bg-surface);
+    color: var(--text-tertiary);
+}
+
+.userMenuWrap {
+    position: relative;
+}
+
+.userMenu {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 100;
+    padding: 6px;
+    min-width: 200px;
+}
+
+.userMenuHeader {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 4px;
+}
+
+.userMenuName {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+}
+
+.userMenuEmail {
+    font-size: 12px;
+    color: var(--text-tertiary);
+}
+
+.userMenuItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+}
+
+.userMenuItem:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
