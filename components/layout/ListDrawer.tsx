@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import styles from './ListDrawer.module.css';
 import { clsx } from 'clsx';
-import { Plus, Users, LogOut, Link2, X, Copy, Check } from 'lucide-react';
+import { Plus, Users, LogOut, Link2, X, Copy, Check, Building2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '../providers/AppContext';
 import { signOut, useSession } from 'next-auth/react';
@@ -16,6 +17,7 @@ interface ListDrawerProps {
 export function ListDrawer({ isOpen, onClose }: ListDrawerProps) {
     const { lists, activeListId, setActiveListId, refreshLists } = useAppContext();
     const { data: session } = useSession();
+    const router = useRouter();
     const [showNewList, setShowNewList] = useState(false);
     const [newListName, setNewListName] = useState('');
     const [showJoin, setShowJoin] = useState(false);
@@ -177,6 +179,10 @@ export function ListDrawer({ isOpen, onClose }: ListDrawerProps) {
                                 <button className={styles.actionBtn} onClick={() => { setShowJoin(true); setShowNewList(false); }}>
                                     <Link2 size={18} />
                                     <span>Join List</span>
+                                </button>
+                                <button className={styles.actionBtn} onClick={() => router.push('/w')}>
+                                    <Building2 size={18} />
+                                    <span>Office</span>
                                 </button>
                             </div>
                         </div>

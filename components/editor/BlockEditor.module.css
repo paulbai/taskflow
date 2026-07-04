@@ -1,0 +1,571 @@
+.editor {
+    position: relative;
+    width: 100%;
+}
+
+/* ── Block rows ────────────────────────────────────────────── */
+
+.blockRow {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 1px 0;
+    border-radius: var(--radius-sm);
+}
+
+.hiddenBlock {
+    display: none;
+}
+
+.dragging {
+    opacity: 0.4;
+}
+
+.dropBefore {
+    box-shadow: 0 -2px 0 0 var(--accent);
+}
+
+.dropAfter {
+    box-shadow: 0 2px 0 0 var(--accent);
+}
+
+.blockBody {
+    flex: 1;
+    min-width: 0;
+}
+
+/* ── Gutter (plus + drag handle) ───────────────────────────── */
+
+.gutter {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-left: -52px;
+    width: 48px;
+    padding-top: 4px;
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-out);
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.blockRow:hover .gutter {
+    opacity: 1;
+}
+
+.gutterBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    padding: 0;
+    transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+}
+
+.gutterBtn:hover {
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+}
+
+.dragHandle {
+    cursor: grab;
+}
+
+.dragHandle:active {
+    cursor: grabbing;
+}
+
+/* ── Editable content ──────────────────────────────────────── */
+
+.editable {
+    outline: none;
+    width: 100%;
+    min-height: 1.5em;
+    word-break: break-word;
+    white-space: pre-wrap;
+    color: var(--text-primary);
+    caret-color: var(--accent);
+}
+
+.editable a {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+.editable code {
+    font-family: 'SF Mono', ui-monospace, Menlo, Monaco, 'Cascadia Code', monospace;
+    font-size: 0.85em;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 1px 5px;
+    color: var(--accent);
+}
+
+.editable:focus:empty::before,
+.alwaysPlaceholder:empty::before {
+    content: attr(data-placeholder);
+    color: var(--text-disabled);
+    pointer-events: none;
+    float: left;
+    height: 0;
+}
+
+.p {
+    font-size: 16px;
+    line-height: 1.6;
+    padding: 3px 0;
+}
+
+.h1 {
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1.25;
+    padding: 14px 0 4px;
+}
+
+.h2 {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.3;
+    padding: 12px 0 3px;
+}
+
+.h3 {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.35;
+    padding: 10px 0 2px;
+}
+
+/* ── Lists / todo / toggle ─────────────────────────────────── */
+
+.listRow {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 3px 0;
+}
+
+.listText {
+    font-size: 16px;
+    line-height: 1.6;
+    flex: 1;
+    min-width: 0;
+}
+
+.bulletDot {
+    color: var(--text-primary);
+    font-size: 18px;
+    line-height: 1.4;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.listNumber {
+    color: var(--text-primary);
+    font-size: 15px;
+    line-height: 1.7;
+    min-width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    user-select: none;
+}
+
+.todoCheck {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin-top: 4px;
+    border: 2px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    background: var(--bg-raised);
+    color: #fff;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    transition: all var(--duration-fast) var(--ease-out);
+}
+
+.todoCheck:hover {
+    border-color: var(--accent);
+}
+
+.todoCheckOn {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.todoDone {
+    text-decoration: line-through;
+    color: var(--text-tertiary);
+}
+
+.toggleBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    margin-top: 2px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    transition: transform var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
+}
+
+.toggleBtn:hover {
+    background: var(--bg-hover);
+}
+
+.toggleOpen {
+    transform: rotate(90deg);
+}
+
+.toggleText {
+    font-weight: 600;
+}
+
+/* ── Quote / callout / code ────────────────────────────────── */
+
+.quote {
+    border-left: 3px solid var(--text-primary);
+    padding: 2px 0 2px 14px;
+    margin: 4px 0;
+}
+
+.quoteText {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+.callout {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--accent-gradient-subtle);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    margin: 4px 0;
+}
+
+.calloutEmojiWrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.calloutEmoji {
+    font-size: 18px;
+    line-height: 1.4;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0 2px;
+    border-radius: var(--radius-sm);
+    transition: background var(--duration-fast) var(--ease-out);
+}
+
+.calloutEmoji:hover {
+    background: var(--bg-hover);
+}
+
+.calloutText {
+    font-size: 15px;
+    line-height: 1.6;
+    flex: 1;
+    min-width: 0;
+    padding-top: 2px;
+}
+
+.codeWrap {
+    position: relative;
+    margin: 4px 0;
+}
+
+.codeText {
+    font-family: 'SF Mono', ui-monospace, Menlo, Monaco, 'Cascadia Code', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    white-space: pre-wrap;
+    tab-size: 4;
+}
+
+.copyBtn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: var(--font-display);
+    color: var(--text-secondary);
+    background: var(--bg-raised);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    padding: 4px 8px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+}
+
+.codeWrap:hover .copyBtn {
+    opacity: 1;
+}
+
+.copyBtn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+/* ── Divider ───────────────────────────────────────────────── */
+
+.divider {
+    padding: 10px 0;
+    cursor: default;
+    border-radius: var(--radius-sm);
+    outline: none;
+}
+
+.divider:focus-visible {
+    background: var(--bg-hover);
+}
+
+.dividerLine {
+    border: none;
+    border-top: 1px solid var(--border-default);
+    margin: 0;
+}
+
+/* ── Image / embed ─────────────────────────────────────────── */
+
+.mediaWrap {
+    position: relative;
+    margin: 6px 0;
+}
+
+.image {
+    max-width: 100%;
+    border-radius: var(--radius-md);
+    display: block;
+}
+
+.embedFrame {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+}
+
+.embedIframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.mediaRemove {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    background: var(--bg-raised);
+    color: var(--text-secondary);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.mediaWrap:hover .mediaRemove {
+    opacity: 1;
+}
+
+.mediaRemove:hover {
+    color: #d4574e;
+    border-color: #d4574e;
+}
+
+.urlForm {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-surface);
+    border: 1px dashed var(--border-default);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    margin: 4px 0;
+}
+
+.urlIcon {
+    display: flex;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+}
+
+.urlInput {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 14px;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+}
+
+.urlInput::placeholder {
+    color: var(--text-disabled);
+}
+
+.urlSubmit {
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: var(--font-display);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.urlSubmit:hover {
+    opacity: 0.85;
+}
+
+/* ── Slash menu ────────────────────────────────────────────── */
+
+.slashMenu {
+    position: fixed;
+    z-index: 300;
+    width: 264px;
+    max-height: 320px;
+    overflow-y: auto;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 6px;
+}
+
+.slashItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font-body);
+    padding: 8px 10px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    text-align: left;
+}
+
+.slashItemActive {
+    background: var(--bg-hover);
+}
+
+.slashIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.slashEmpty {
+    padding: 12px 10px;
+    font-size: 13px;
+    color: var(--text-tertiary);
+}
+
+/* ── Floating format toolbar ───────────────────────────────── */
+
+.toolbar {
+    position: fixed;
+    z-index: 300;
+    transform: translate(-50%, calc(-100% - 8px));
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 4px;
+}
+
+.toolbarBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    padding: 0;
+    transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+}
+
+.toolbarBtn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+/* ── Bottom click-to-add area ──────────────────────────────── */
+
+.bottomPad {
+    min-height: 140px;
+    cursor: text;
+}
