@@ -1,0 +1,106 @@
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+}
+
+.card {
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow var(--duration-fast) ease, transform var(--duration-fast) ease;
+    text-align: left;
+    padding: 0;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.cover {
+    height: 110px;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+}
+
+.coverPlaceholder {
+    height: 110px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.body {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.title {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-primary);
+    word-break: break-word;
+}
+
+.tagRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.metaRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.personName {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.newCard {
+    border: 2px dashed var(--border-default);
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--text-tertiary);
+    font-size: 13px;
+    font-weight: 700;
+    font-family: var(--font-display);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 160px;
+    transition: all var(--duration-fast) ease;
+}
+
+.newCard:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.empty {
+    padding: 32px;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 13px;
+}

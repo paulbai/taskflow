@@ -1,0 +1,342 @@
+.wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.toolbarBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--border-default);
+    background: var(--bg-raised);
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 700;
+    font-family: var(--font-display);
+    padding: 5px 10px;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all var(--duration-fast) ease;
+    position: relative;
+}
+
+.toolbarBtn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.toolbarBtnActive {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-gradient-subtle);
+}
+
+.filterChip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-gradient-subtle);
+    border: 1px solid var(--border-focus);
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 8px 4px 10px;
+    border-radius: var(--radius-full);
+}
+
+.chipRemove {
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 1px;
+    border-radius: 50%;
+}
+
+.chipRemove:hover {
+    color: var(--card-coral);
+}
+
+.menuAnchor {
+    position: relative;
+}
+
+.menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 70;
+    min-width: 210px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.menuRight {
+    left: auto;
+    right: 0;
+}
+
+.menuItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 8px;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-primary);
+    text-align: left;
+    font-family: var(--font-body);
+    white-space: nowrap;
+}
+
+.menuItem:hover {
+    background: var(--bg-hover);
+}
+
+.menuItemDanger {
+    color: var(--card-coral);
+}
+
+.menuItemActive {
+    background: var(--bg-active);
+}
+
+.menuDivider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 4px 0;
+}
+
+.menuLabel {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    padding: 4px 8px 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.menuSelect,
+.menuInput {
+    border: 1px solid var(--border-default);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 12px;
+    padding: 5px 8px;
+    border-radius: var(--radius-sm);
+    outline: none;
+    font-family: var(--font-body);
+    margin: 2px 2px 4px;
+}
+
+.menuSelect:focus,
+.menuInput:focus {
+    border-color: var(--border-focus);
+}
+
+.tableScroll {
+    overflow-x: auto;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: var(--bg-raised);
+}
+
+.table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 640px;
+}
+
+.th {
+    position: relative;
+    text-align: left;
+    border-bottom: 1px solid var(--border-default);
+    border-right: 1px solid var(--border-subtle);
+    background: var(--bg-surface);
+    min-width: 150px;
+    padding: 0;
+}
+
+.thCheckbox {
+    min-width: 60px;
+    width: 60px;
+}
+
+.thAction {
+    min-width: 44px;
+    width: 44px;
+    border-right: none;
+}
+
+.thBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: var(--font-display);
+    color: var(--text-secondary);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.thBtn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.thSortIcon {
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.addColBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 8px;
+    color: var(--text-tertiary);
+    cursor: pointer;
+}
+
+.addColBtn:hover {
+    color: var(--accent);
+    background: var(--bg-hover);
+}
+
+.td {
+    border-bottom: 1px solid var(--border-subtle);
+    border-right: 1px solid var(--border-subtle);
+    padding: 0;
+    vertical-align: middle;
+}
+
+.tdAction {
+    border-right: none;
+    text-align: center;
+}
+
+.row:hover .td {
+    background: var(--bg-hover);
+}
+
+.deleteRowBtn {
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    opacity: 0;
+    transition: opacity var(--duration-fast) ease;
+}
+
+.row:hover .deleteRowBtn {
+    opacity: 1;
+}
+
+.deleteRowBtn:hover {
+    color: var(--card-coral);
+    background: color-mix(in srgb, var(--card-coral) 12%, transparent);
+}
+
+.groupHeaderCell {
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 0;
+}
+
+.groupHeaderBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 8px 10px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 800;
+    font-family: var(--font-display);
+    color: var(--text-primary);
+}
+
+.groupDot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.groupCount {
+    color: var(--text-tertiary);
+    font-weight: 600;
+}
+
+.newRowBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 9px 10px;
+    color: var(--text-tertiary);
+    font-size: 13px;
+    font-weight: 700;
+    font-family: var(--font-display);
+    cursor: pointer;
+    text-align: left;
+}
+
+.newRowBtn:hover {
+    color: var(--accent);
+    background: var(--bg-hover);
+}
+
+.footer {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    font-weight: 600;
+    padding: 2px 4px;
+}
+
+.empty {
+    padding: 28px 12px;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 13px;
+}
