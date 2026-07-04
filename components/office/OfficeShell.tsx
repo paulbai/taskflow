@@ -8,6 +8,7 @@ import { TopbarStateProvider } from './TopbarState';
 import { OfficeSidebar } from './OfficeSidebar';
 import { Topbar } from './Topbar';
 import { SearchModal } from './SearchModal';
+import { AiPanel } from '@/components/ai/AiPanel';
 
 function ShellInner({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -86,6 +87,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                 <main className={styles.main}>{children}</main>
             </div>
             <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+            <AiPanel />
         </div>
     );
 }
