@@ -8,13 +8,15 @@ import { TopbarStateProvider } from './TopbarState';
 import { OfficeSidebar } from './OfficeSidebar';
 import { Topbar } from './Topbar';
 import { SearchModal } from './SearchModal';
+import { ShortcutsModal } from './ShortcutsModal';
 import { AiPanel } from '@/components/ai/AiPanel';
 
 function ShellInner({ children }: { children: React.ReactNode }) {
     const router = useRouter();
-    const { workspace, workspaces, loading } = useOffice();
+    const { workspace, workspaces, loading, sidebarCollapsed, setSidebarCollapsed } = useOffice();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
+    const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
     // Apply persisted theme on mount
     useEffect(() => {
@@ -28,11 +30,17 @@ function ShellInner({ children }: { children: React.ReactNode }) {
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault();
                 setSearchOpen(o => !o);
+            } else if ((e.metaKey || e.ctrlKey) && e.key === '/') {
+                e.preventDefault();
+                setSidebarCollapsed(!sidebarCollapsed);
+            } else if (e.key === '?' && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement) && !(e.target as HTMLElement)?.isContentEditable) {
+                e.preventDefault();
+                setShortcutsOpen(o => !o);
             }
         };
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
-    }, []);
+    }, [sidebarCollapsed, setSidebarCollapsed]);
 
     const openSearch = useCallback(() => {
         setSearchOpen(true);
@@ -87,6 +95,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                 <main className={styles.main}>{children}</main>
             </div>
             <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+            <ShortcutsModal open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
             <AiPanel />
         </div>
     );
