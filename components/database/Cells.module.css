@@ -252,3 +252,186 @@
     color: var(--text-secondary);
     font-variant-numeric: tabular-nums;
 }
+
+/* ── Files / deliverables ── */
+.filesWrap {
+    position: relative;
+    width: 100%;
+}
+
+.filesTrigger {
+    width: 100%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    padding: 4px 0;
+    font-family: var(--font-body);
+}
+
+.filesSummary {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.fileChip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    background: var(--bg-hover);
+    border: 1px solid var(--border-subtle);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    max-width: 170px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.fileMore {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+}
+
+.filesMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 40;
+    min-width: 260px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.fileRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 8px;
+    border-radius: var(--radius-sm);
+    color: var(--text-tertiary);
+}
+
+.fileRow:hover {
+    background: var(--bg-hover);
+}
+
+.fileLink {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fileLink:hover {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+.fileRemove {
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    display: flex;
+    padding: 2px;
+    border-radius: var(--radius-sm);
+}
+
+.fileRemove:hover {
+    color: var(--color-error);
+    background: rgba(240, 104, 104, 0.08);
+}
+
+.filesEmpty {
+    font-size: 12px;
+    color: var(--text-disabled);
+    padding: 4px 8px;
+    font-style: italic;
+}
+
+.fileAddRow {
+    display: flex;
+    gap: 6px;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 8px;
+}
+
+.fileLinkInput {
+    flex: 1;
+    padding: 7px 10px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border-subtle);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 12px;
+    font-family: var(--font-body);
+    outline: none;
+}
+
+.fileLinkInput:focus {
+    border-color: var(--accent);
+}
+
+.fileAddBtn {
+    padding: 7px 12px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: var(--accent-gradient);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--font-display);
+}
+
+.fileAddBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.fileUploadBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    border: 1.5px dashed var(--border-focus);
+    background: transparent;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--font-display);
+}
+
+.fileUploadBtn:hover:not(:disabled) {
+    background: var(--accent-gradient-subtle);
+}
+
+.fileUploadBtn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.fileError {
+    font-size: 11px;
+    color: var(--color-error);
+    font-weight: 600;
+    padding: 2px 4px;
+}

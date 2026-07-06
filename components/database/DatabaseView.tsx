@@ -33,9 +33,13 @@ const VIEW_TABS: { id: DbViewType; label: string; icon: React.ComponentType<{ si
 interface DatabaseViewProps {
     databaseId: string;
     fallbackView?: DbViewType;
+    /** Embedded in another page: hides the title header and skips topbar crumbs. */
+    embedded?: boolean;
+    /** Only show rows whose person column matches this userId. */
+    assigneeFilter?: string;
 }
 
-export function DatabaseView({ databaseId, fallbackView }: DatabaseViewProps) {
+export function DatabaseView({ databaseId, fallbackView, embedded, assigneeFilter }: DatabaseViewProps) {
     const { workspace, refreshDatabases } = useOffice();
     const { setCrumbs, setSaveStatus } = useTopbar();
     const [db, setDb] = useState<DbFull | null>(null);
@@ -91,9 +95,10 @@ export function DatabaseView({ databaseId, fallbackView }: DatabaseViewProps) {
     // ── Topbar crumbs ───────────────────────────────────────────
 
     useEffect(() => {
+        if (embedded) return;
         if (db) setCrumbs([{ label: db.title, emoji: db.iconEmoji }]);
         return () => setCrumbs([]);
-    }, [db, setCrumbs]);
+    }, [db, setCrumbs, embedded]);
 
     // Flush pending row saves on unmount so quick edits are not lost
     useEffect(() => {
@@ -254,9 +259,13 @@ export function DatabaseView({ databaseId, fallbackView }: DatabaseViewProps) {
     }
 
     const activeView = view || 'table';
+    const personCol = db.schema.find(c => c.type === 'person');
+    const visibleRows = assigneeFilter && personCol
+        ? rows.filter(r => r.data[personCol.id] === assigneeFilter)
+        : rows;
     const viewProps: ViewProps = {
         db,
-        rows,
+        rows: visibleRows,
         members,
         onUpdateRow,
         onCreateRow,
@@ -267,19 +276,21 @@ export function DatabaseView({ databaseId, fallbackView }: DatabaseViewProps) {
     return (
         <div className={styles.page}>
             <div className={styles.header}>
-                <div className={styles.titleRow}>
-                    <button className={styles.emojiBtn} title="Change icon" onClick={editEmoji}>
-                        {db.iconEmoji || '🗂️'}
-                    </button>
-                    <input
-                        className={styles.titleInput}
-                        value={titleDraft}
-                        onChange={e => setTitleDraft(e.target.value)}
-                        onBlur={commitTitle}
-                        onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
-                        aria-label="Database title"
-                    />
-                </div>
+                {!embedded && (
+                    <div className={styles.titleRow}>
+                        <button className={styles.emojiBtn} title="Change icon" onClick={editEmoji}>
+                            {db.iconEmoji || '🗂️'}
+                        </button>
+                        <input
+                            className={styles.titleInput}
+                            value={titleDraft}
+                            onChange={e => setTitleDraft(e.target.value)}
+                            onBlur={commitTitle}
+                            onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+                            aria-label="Database title"
+                        />
+                    </div>
+                )}
                 <div className={styles.metaRow}>
                     <div className={styles.tabs}>
                         {VIEW_TABS.map(tab => {
@@ -297,7 +308,7 @@ export function DatabaseView({ databaseId, fallbackView }: DatabaseViewProps) {
                         })}
                     </div>
                     <span className={styles.rowCount}>
-                        {rows.length} row{rows.length === 1 ? '' : 's'}
+                        {visibleRows.length} row{visibleRows.length === 1 ? '' : 's'}
                     </span>
                 </div>
             </div>

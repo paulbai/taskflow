@@ -7,6 +7,7 @@ import {
     Hash,
     Link2,
     List,
+    Paperclip,
     Sigma,
     Tags,
     Type,
@@ -24,6 +25,7 @@ const ICONS: Record<DbColumnType, React.ComponentType<{ size?: number | string }
     checkbox: CheckSquare,
     url: Link2,
     formula: Sigma,
+    files: Paperclip,
 };
 
 export const COLUMN_TYPE_LABELS: Record<DbColumnType, string> = {
@@ -36,6 +38,7 @@ export const COLUMN_TYPE_LABELS: Record<DbColumnType, string> = {
     checkbox: 'Checkbox',
     url: 'URL',
     formula: 'Formula',
+    files: 'Files & links',
 };
 
 export function ColumnTypeIcon({ type, size = 14 }: { type: DbColumnType; size?: number }) {

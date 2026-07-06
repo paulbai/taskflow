@@ -229,3 +229,100 @@
     background: var(--bg-surface);
     border-radius: var(--radius-md);
 }
+
+/* ── HQ header ── */
+.hqHeader {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin: 8px 0 4px;
+}
+
+.hqIcon {
+    width: 72px;
+    height: 72px;
+    border-radius: var(--radius-xl);
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    flex-shrink: 0;
+}
+
+.hqName {
+    font-family: var(--font-display);
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.1;
+}
+
+.hqSub {
+    font-size: 14px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+/* ── HQ tabs ── */
+.hqTabs {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    border-bottom: 2px solid var(--border-subtle);
+    margin-bottom: 20px;
+    overflow-x: auto;
+}
+
+.hqTab {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    font-size: 14px;
+    font-weight: 700;
+    font-family: var(--font-display);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    white-space: nowrap;
+    transition: color var(--duration-fast) ease;
+}
+
+.hqTab:hover {
+    color: var(--text-primary);
+}
+
+.hqTabActive {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+.hqNewBtn {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: var(--accent-gradient);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: var(--font-display);
+    cursor: pointer;
+    box-shadow: 0 3px 10px var(--accent-glow);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.hqNewBtn:hover {
+    filter: brightness(1.06);
+}

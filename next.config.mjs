@@ -14,6 +14,11 @@ const withPWA = withPWAInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    // undici (via @vercel/blob) uses syntax Next 14's webpack can't parse;
+    // load these at runtime instead of bundling them
+    serverComponentsExternalPackages: ['@vercel/blob', 'undici'],
+  },
   async headers() {
     return [
       {

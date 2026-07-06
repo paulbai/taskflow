@@ -63,7 +63,7 @@ export function safeJsonParse<T>(raw: string | null | undefined, fallback: T): T
 }
 
 export const VALID_DB_VIEWS = ['table', 'board', 'calendar', 'gallery', 'list'];
-export const VALID_COLUMN_TYPES = ['text', 'number', 'select', 'multiSelect', 'date', 'person', 'checkbox', 'url', 'formula'];
+export const VALID_COLUMN_TYPES = ['text', 'number', 'select', 'multiSelect', 'date', 'person', 'checkbox', 'url', 'formula', 'files'];
 
 /** Validate a database schema definition. Returns an error message or null if valid. */
 export function validateDbSchema(schema: unknown): string | null {

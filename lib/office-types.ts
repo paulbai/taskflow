@@ -76,7 +76,16 @@ export type DbColumnType =
     | 'person'
     | 'checkbox'
     | 'url'
-    | 'formula';
+    | 'formula'
+    | 'files';
+
+/** An attachment on a `files` column: an uploaded document or a pasted link. */
+export interface DbAttachment {
+    id: string;
+    name: string;
+    url: string;
+    kind: 'file' | 'link';
+}
 
 export interface DbSelectOption {
     id: string;

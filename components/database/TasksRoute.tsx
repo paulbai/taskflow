@@ -33,6 +33,7 @@ function buildTaskSchema(): DbColumn[] {
                 { id: uid(), label: 'Urgent', color: 'coral' },
             ],
         },
+        { id: uid(), name: 'Deliverables', type: 'files' },
     ];
 }
 
@@ -43,6 +44,34 @@ export function TasksRoute() {
     const creatingRef = useRef(false);
 
     const taskDb = databases.find(d => d.isTaskDb);
+
+    // Self-heal: task databases created before the Deliverables feature
+    // get the files column added once.
+    const healedRef = useRef(false);
+    useEffect(() => {
+        if (!taskDb || healedRef.current) return;
+        healedRef.current = true;
+        (async () => {
+            try {
+                const res = await fetch(`/api/databases/${taskDb.id}`);
+                if (!res.ok) return;
+                const full = await res.json();
+                const schema: DbColumn[] = full.schema || [];
+                if (!schema.some(c => c.type === 'files')) {
+                    await fetch(`/api/databases/${taskDb.id}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            schema: [...schema, { id: uid(), name: 'Deliverables', type: 'files' }],
+                        }),
+                    });
+                    await refreshDatabases();
+                }
+            } catch {
+                // non-fatal; column can be added manually
+            }
+        })();
+    }, [taskDb, refreshDatabases]);
 
     useEffect(() => {
         if (loading || !workspace || taskDb || creatingRef.current) return;

@@ -2,8 +2,8 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { Check, Pencil, X } from 'lucide-react';
-import type { DbColumn, DbSelectOption, OfficeMember } from '@/lib/office-types';
+import { Check, Pencil, X, Paperclip, Link2, Upload, FileText } from 'lucide-react';
+import type { DbColumn, DbSelectOption, OfficeMember, DbAttachment } from '@/lib/office-types';
 import {
     colorVar,
     formatDate,
@@ -435,6 +435,137 @@ function FormulaCell({ column, schema, rowData }: CellEditorProps) {
 
 // ── Dispatcher ──────────────────────────────────────────────────
 
+// ── Files / deliverables ────────────────────────────────────────
+
+function normalizeAttachments(value: unknown): DbAttachment[] {
+    if (!Array.isArray(value)) return [];
+    return value.filter(
+        (a): a is DbAttachment => Boolean(a && typeof a === 'object' && typeof (a as DbAttachment).url === 'string')
+    );
+}
+
+function FilesCell({ value, onChange }: CellEditorProps) {
+    const [open, setOpen] = useState(false);
+    const [linkDraft, setLinkDraft] = useState('');
+    const [uploading, setUploading] = useState(false);
+    const [uploadError, setUploadError] = useState('');
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const ref = useClickOutside(open, () => setOpen(false));
+
+    const attachments = normalizeAttachments(value);
+
+    const addLink = () => {
+        let url = linkDraft.trim();
+        if (!url || /^javascript:/i.test(url)) return;
+        if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+        let name = url;
+        try {
+            name = new URL(url).hostname + new URL(url).pathname.replace(/\/$/, '');
+        } catch {
+            // keep raw url as name
+        }
+        onChange([...attachments, { id: uid(), name, url, kind: 'link' }]);
+        setLinkDraft('');
+    };
+
+    const uploadFile = async (file: File) => {
+        setUploading(true);
+        setUploadError('');
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            const res = await fetch('/api/upload', { method: 'POST', body: formData });
+            const data = await res.json();
+            if (!res.ok) {
+                setUploadError(data.error || 'Upload failed');
+                return;
+            }
+            onChange([...attachments, { id: uid(), name: data.name, url: data.url, kind: 'file' }]);
+        } catch {
+            setUploadError('Upload failed. Please try again.');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const remove = (id: string) => {
+        onChange(attachments.filter(a => a.id !== id));
+    };
+
+    return (
+        <div className={styles.filesWrap} ref={ref}>
+            <button type="button" className={styles.filesTrigger} onClick={() => setOpen(o => !o)}>
+                {attachments.length === 0 ? (
+                    <span className={styles.placeholder}><Paperclip size={12} /> Attach</span>
+                ) : (
+                    <span className={styles.filesSummary}>
+                        {attachments.slice(0, 2).map(a => (
+                            <span key={a.id} className={styles.fileChip}>
+                                {a.kind === 'link' ? <Link2 size={11} /> : <FileText size={11} />}
+                                {a.name.length > 22 ? a.name.slice(0, 20) + '…' : a.name}
+                            </span>
+                        ))}
+                        {attachments.length > 2 && <span className={styles.fileMore}>+{attachments.length - 2}</span>}
+                    </span>
+                )}
+            </button>
+
+            {open && (
+                <div className={styles.filesMenu}>
+                    {attachments.map(a => (
+                        <div key={a.id} className={styles.fileRow}>
+                            {a.kind === 'link' ? <Link2 size={13} /> : <FileText size={13} />}
+                            <a href={a.url} target="_blank" rel="noreferrer" className={styles.fileLink} title={a.url}>
+                                {a.name}
+                            </a>
+                            <button type="button" className={styles.fileRemove} onClick={() => remove(a.id)} aria-label={`Remove ${a.name}`}>
+                                <X size={12} />
+                            </button>
+                        </div>
+                    ))}
+                    {attachments.length === 0 && (
+                        <div className={styles.filesEmpty}>No deliverables yet</div>
+                    )}
+
+                    <div className={styles.fileAddRow}>
+                        <input
+                            className={styles.fileLinkInput}
+                            placeholder="Paste a link…"
+                            value={linkDraft}
+                            onChange={e => setLinkDraft(e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addLink(); } }}
+                        />
+                        <button type="button" className={styles.fileAddBtn} onClick={addLink} disabled={!linkDraft.trim()}>
+                            Add
+                        </button>
+                    </div>
+
+                    <button
+                        type="button"
+                        className={styles.fileUploadBtn}
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploading}
+                    >
+                        <Upload size={13} />
+                        {uploading ? 'Uploading…' : 'Upload a document'}
+                    </button>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        style={{ display: 'none' }}
+                        onChange={e => {
+                            const file = e.target.files?.[0];
+                            if (file) uploadFile(file);
+                            e.target.value = '';
+                        }}
+                    />
+                    {uploadError && <div className={styles.fileError}>{uploadError}</div>}
+                </div>
+            )}
+        </div>
+    );
+}
+
 export function CellEditor(props: CellEditorProps) {
     switch (props.column.type) {
         case 'text': return <TextCell {...props} />;
@@ -446,6 +577,7 @@ export function CellEditor(props: CellEditorProps) {
         case 'checkbox': return <CheckboxCell {...props} />;
         case 'url': return <UrlCell {...props} />;
         case 'formula': return <FormulaCell {...props} />;
+        case 'files': return <FilesCell {...props} />;
         default: return <TextCell {...props} />;
     }
 }
