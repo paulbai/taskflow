@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import styles from './Sidebar.module.css';
 import { clsx } from 'clsx';
 import { CheckSquare, Plus, Users, Sun, Moon, LogOut, Link2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useAppContext } from '../providers/AppContext';
 import { signOut, useSession } from 'next-auth/react';
 
@@ -68,18 +68,15 @@ export function Sidebar({ isOpen, onClose, theme, onToggleTheme }: SidebarProps)
 
     return (
         <>
-            <AnimatePresence>
                 {isOpen && (
                     <motion.div
                         className={styles.mobileOverlay}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
                         onClick={onClose}
                     />
                 )}
-            </AnimatePresence>
 
             <aside className={clsx(styles.sidebar, isOpen && styles.open)}>
                 <div className={styles.header}>

@@ -6,7 +6,7 @@ import { CalendarView } from '@/components/calendar/CalendarView';
 import { WorkspaceView } from '@/components/workspace/WorkspaceView';
 import { Loader2, Timer as TimerIcon, Play, Pause, RotateCw, UserPlus, X } from 'lucide-react';
 import { Task } from '@/types';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useAppContext } from '@/components/providers/AppContext';
 import { useSession } from 'next-auth/react';
 import styles from './page.module.css';
@@ -19,6 +19,9 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const { activeListId, activeList, activeTab, setActiveListId, refreshLists } = useAppContext();
     const { data: session } = useSession();
+
+    // Stats drill-down modal state
+    const [statsFilter, setStatsFilter] = useState<'todo' | 'done' | 'all' | null>(null);
 
     // Join task modal state
     const [showJoinModal, setShowJoinModal] = useState(false);
@@ -191,20 +194,17 @@ export default function Home() {
             </button>
 
             {/* Join Task Modal */}
-            <AnimatePresence>
-                {showJoinModal && (
+            {showJoinModal && (
                     <motion.div
                         className={styles.joinOverlay}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
                         onClick={() => setShowJoinModal(false)}
                     >
                         <motion.div
                             className={styles.joinModal}
                             initial={{ scale: 0.95, y: 20 }}
                             animate={{ scale: 1, y: 0 }}
-                            exit={{ scale: 0.95, y: 20 }}
                             onClick={e => e.stopPropagation()}
                         >
                             <div className={styles.joinHeader}>
@@ -241,32 +241,89 @@ export default function Home() {
                             )}
                         </motion.div>
                     </motion.div>
-                )}
-            </AnimatePresence>
+            )}
 
             {/* Stats Cards */}
             <div className={styles.statsRow}>
-                <div className={`${styles.statCard} ${styles.statTodo}`}>
+                <button
+                    className={`${styles.statCard} ${styles.statTodo}`}
+                    onClick={() => setStatsFilter('todo')}
+                    aria-label={`View ${activeTasks.length} to-do tasks`}
+                >
                     <div className={styles.statNumber}>{activeTasks.length}</div>
                     <div className={styles.statLabel}>To-Do</div>
-                </div>
-                <div className={`${styles.statCard} ${styles.statDone}`}>
+                </button>
+                <button
+                    className={`${styles.statCard} ${styles.statDone}`}
+                    onClick={() => setStatsFilter('done')}
+                    aria-label={`View ${completedTasks.length} done tasks`}
+                >
                     <div className={styles.statNumber}>{completedTasks.length}</div>
                     <div className={styles.statLabel}>Done</div>
-                </div>
-                <div className={`${styles.statCard} ${styles.statTotal}`}>
+                </button>
+                <button
+                    className={`${styles.statCard} ${styles.statTotal}`}
+                    onClick={() => setStatsFilter('all')}
+                    aria-label={`View all ${tasks.length} tasks`}
+                >
                     <div className={styles.statNumber}>{tasks.length}</div>
                     <div className={styles.statLabel}>Total</div>
-                </div>
+                </button>
             </div>
 
+            {/* Stats drill-down modal */}
+            {statsFilter && (
+                    <motion.div
+                        className={styles.joinOverlay}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        onClick={() => setStatsFilter(null)}
+                    >
+                        <motion.div
+                            className={styles.joinModal}
+                            initial={{ scale: 0.95, y: 16 }}
+                            animate={{ scale: 1, y: 0 }}
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className={styles.joinHeader}>
+                                <h2 className={styles.joinTitle}>
+                                    {statsFilter === 'todo' ? 'To-Do tasks' : statsFilter === 'done' ? 'Done tasks' : 'All tasks'}
+                                </h2>
+                                <button className={styles.joinClose} onClick={() => setStatsFilter(null)} aria-label="Close">
+                                    <X size={18} />
+                                </button>
+                            </div>
+                            <p className={styles.joinDesc}>
+                                {activeList ? `In "${activeList.name}"` : 'In your current list'}
+                            </p>
+                            <div className={styles.statsTaskList}>
+                                {(statsFilter === 'todo' ? activeTasks : statsFilter === 'done' ? completedTasks : tasks).length === 0 && (
+                                    <div className={styles.statsTaskEmpty}>Nothing here yet</div>
+                                )}
+                                {(statsFilter === 'todo' ? activeTasks : statsFilter === 'done' ? completedTasks : tasks).map(task => (
+                                    <div key={task.id} className={styles.statsTaskRow}>
+                                        <span
+                                            className={styles.statsTaskDot}
+                                            data-status={task.status}
+                                        />
+                                        <span className={`${styles.statsTaskTitle} ${task.status === 'done' ? styles.statsTaskTitleDone : ''}`}>
+                                            {task.title}
+                                        </span>
+                                        <span className={styles.statsTaskMeta}>
+                                            {task.status === 'done' ? 'done' : task.status === 'in_progress' ? 'in progress' : 'to-do'}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </motion.div>
+                    </motion.div>
+            )}
+
             {/* Tab Content */}
-            <AnimatePresence mode="wait">
                 <motion.div
                     key={activeTab}
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -12 }}
                     transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                 >
                     {activeTab === 'home' && (
@@ -325,7 +382,6 @@ export default function Home() {
                         </div>
                     )}
                 </motion.div>
-            </AnimatePresence>
         </div>
     );
 }

@@ -5,8 +5,9 @@ import styles from './WorkspaceView.module.css';
 import { KanbanBoard } from '../board/KanbanBoard';
 import { TaskDetailModal } from '../tasks/TaskDetailModal';
 import { Workspace, Board, Task, TaskStatus, WorkspaceMember } from '@/types';
-import { Plus, Building2, Users, ArrowLeft, UserPlus, X, Briefcase, Home as HomeIcon, UsersRound, Layers } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Building2, Users, ArrowLeft, UserPlus, X, Briefcase, Home as HomeIcon, UsersRound, Layers, Trash2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useSession } from 'next-auth/react';
 
 const WORKSPACE_TYPES = [
     { value: 'company', label: 'Company', icon: Building2 },
@@ -16,7 +17,12 @@ const WORKSPACE_TYPES = [
 ];
 
 export function WorkspaceView() {
+    const { data: session } = useSession();
+    const currentUserId = (session?.user as { id?: string } | undefined)?.id || '';
     const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+    const [deleteTarget, setDeleteTarget] = useState<Workspace | null>(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+    const [deleteError, setDeleteError] = useState('');
     const [loading, setLoading] = useState(true);
     const [activeWorkspace, setActiveWorkspace] = useState<Workspace | null>(null);
     const [activeBoard, setActiveBoard] = useState<Board | null>(null);
@@ -91,6 +97,30 @@ export function WorkspaceView() {
             setWsType('team');
         }
         setFormLoading(false);
+    };
+
+    const handleDeleteWorkspace = async () => {
+        if (!deleteTarget || deleteLoading) return;
+        setDeleteLoading(true);
+        setDeleteError('');
+        try {
+            const res = await fetch(`/api/workspaces/${deleteTarget.id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ confirmName: deleteTarget.name }),
+            });
+            if (res.ok) {
+                setWorkspaces(prev => prev.filter(w => w.id !== deleteTarget.id));
+                setDeleteTarget(null);
+            } else {
+                const data = await res.json().catch(() => ({}));
+                setDeleteError(data.error || 'Could not delete the workspace. Please try again.');
+            }
+        } catch {
+            setDeleteError('Connection failed. Please try again.');
+        } finally {
+            setDeleteLoading(false);
+        }
     };
 
     const handleCreateBoard = async () => {
@@ -269,6 +299,16 @@ export function WorkspaceView() {
                                         <span className={styles.wsType}>{ws.type}</span>
                                     </div>
                                 </div>
+                                {ws.ownerId === currentUserId && (
+                                    <button
+                                        className={styles.wsDeleteBtn}
+                                        onClick={() => { setDeleteTarget(ws); setDeleteError(''); }}
+                                        aria-label={`Delete workspace ${ws.name}`}
+                                        title="Delete workspace"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                )}
                             </div>
 
                             {ws.boards.length > 0 ? (
@@ -302,11 +342,62 @@ export function WorkspaceView() {
                 </div>
             )}
 
+            {/* ── Delete Workspace Confirmation ── */}
+                {deleteTarget && (
+                    <motion.div
+                        className={styles.overlay}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                       
+                        onClick={() => !deleteLoading && setDeleteTarget(null)}
+                    >
+                        <motion.div
+                            className={styles.modal}
+                            initial={{ scale: 0.95, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                           
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className={styles.modalHeader}>
+                                <h3>Delete &quot;{deleteTarget.name}&quot;?</h3>
+                                <button className={styles.closeBtn} onClick={() => setDeleteTarget(null)} aria-label="Close">
+                                    <X size={18} />
+                                </button>
+                            </div>
+                            <p className={styles.modalDesc}>
+                                This permanently deletes the workspace
+                                {deleteTarget.boards.length > 0 && (
+                                    <>, its {deleteTarget.boards.length} board{deleteTarget.boards.length === 1 ? '' : 's'},</>
+                                )}{' '}
+                                and every task in it — for all {deleteTarget.members.length === 1 ? 'members' : `${deleteTarget.members.length} members`}.
+                                This cannot be undone.
+                            </p>
+                            {deleteError && <p className={styles.deleteError}>{deleteError}</p>}
+                            <div className={styles.deleteActions}>
+                                <button
+                                    className={styles.cancelBtn}
+                                    onClick={() => setDeleteTarget(null)}
+                                    disabled={deleteLoading}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    className={styles.confirmDeleteBtn}
+                                    onClick={handleDeleteWorkspace}
+                                    disabled={deleteLoading}
+                                >
+                                    <Trash2 size={15} />
+                                    {deleteLoading ? 'Deleting…' : 'Delete forever'}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+
             {/* ── Create Workspace Modal ── */}
-            <AnimatePresence>
                 {showCreateWS && (
-                    <motion.div className={styles.overlay} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowCreateWS(false)}>
-                        <motion.div className={styles.modal} initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} onClick={e => e.stopPropagation()}>
+                    <motion.div className={styles.overlay} initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={() => setShowCreateWS(false)}>
+                        <motion.div className={styles.modal} initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} onClick={e => e.stopPropagation()}>
                             <div className={styles.modalHeader}>
                                 <h3>Create Workspace</h3>
                                 <button className={styles.closeBtn} onClick={() => setShowCreateWS(false)}><X size={18} /></button>
@@ -330,13 +421,11 @@ export function WorkspaceView() {
                         </motion.div>
                     </motion.div>
                 )}
-            </AnimatePresence>
 
             {/* ── Create Board Modal ── */}
-            <AnimatePresence>
                 {showCreateBoard && (
-                    <motion.div className={styles.overlay} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowCreateBoard(false)}>
-                        <motion.div className={styles.modal} initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} onClick={e => e.stopPropagation()}>
+                    <motion.div className={styles.overlay} initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={() => setShowCreateBoard(false)}>
+                        <motion.div className={styles.modal} initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} onClick={e => e.stopPropagation()}>
                             <div className={styles.modalHeader}>
                                 <h3>Create Board</h3>
                                 <button className={styles.closeBtn} onClick={() => setShowCreateBoard(false)}><X size={18} /></button>
@@ -351,13 +440,11 @@ export function WorkspaceView() {
                         </motion.div>
                     </motion.div>
                 )}
-            </AnimatePresence>
 
             {/* ── Join Modal ── */}
-            <AnimatePresence>
                 {showJoin && (
-                    <motion.div className={styles.overlay} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowJoin(false)}>
-                        <motion.div className={styles.modal} initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} onClick={e => e.stopPropagation()}>
+                    <motion.div className={styles.overlay} initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={() => setShowJoin(false)}>
+                        <motion.div className={styles.modal} initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} onClick={e => e.stopPropagation()}>
                             <div className={styles.modalHeader}>
                                 <h3>Join Workspace</h3>
                                 <button className={styles.closeBtn} onClick={() => setShowJoin(false)}><X size={18} /></button>
@@ -386,7 +473,6 @@ export function WorkspaceView() {
                         </motion.div>
                     </motion.div>
                 )}
-            </AnimatePresence>
         </div>
     );
 }

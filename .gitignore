@@ -49,3 +49,4 @@ public/swe-worker-*.js
 # Local database
 *.db
 *.db-journal
+.env*.local

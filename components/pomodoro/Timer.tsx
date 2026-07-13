@@ -5,7 +5,7 @@ import styles from './Timer.module.css';
 import { Timer as TimerIcon, Play, Pause, RotateCw, X } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { clsx } from 'clsx';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const FOCUS_TIME = 25 * 60;
 const BREAK_TIME = 5 * 60;
@@ -59,13 +59,11 @@ export function Timer() {
 
     return (
         <div className={styles.container}>
-            <AnimatePresence>
                 {isOpen && (
                     <motion.div
                         className={styles.panel}
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
                         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                     >
                         <div className={styles.panelHeader}>
@@ -130,7 +128,6 @@ export function Timer() {
                         </div>
                     </motion.div>
                 )}
-            </AnimatePresence>
 
             <motion.button
                 className={clsx(styles.fab, isActive && styles.fabActive)}

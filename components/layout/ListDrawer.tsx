@@ -5,7 +5,7 @@ import styles from './ListDrawer.module.css';
 import { clsx } from 'clsx';
 import { Plus, Users, LogOut, Link2, X, Copy, Check, Building2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useAppContext } from '../providers/AppContext';
 import { signOut, useSession } from 'next-auth/react';
 
@@ -73,15 +73,14 @@ export function ListDrawer({ isOpen, onClose }: ListDrawerProps) {
         setTimeout(() => setCopiedId(''), 2000);
     };
 
+    if (!isOpen) return null;
+
     return (
-        <AnimatePresence>
-            {isOpen && (
                 <>
                     <motion.div
                         className={styles.overlay}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
                         onClick={onClose}
                     />
@@ -89,7 +88,6 @@ export function ListDrawer({ isOpen, onClose }: ListDrawerProps) {
                         className={styles.drawer}
                         initial={{ y: '100%' }}
                         animate={{ y: 0 }}
-                        exit={{ y: '100%' }}
                         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                     >
                         <div className={styles.handle} />
@@ -206,7 +204,5 @@ export function ListDrawer({ isOpen, onClose }: ListDrawerProps) {
                         )}
                     </motion.div>
                 </>
-            )}
-        </AnimatePresence>
     );
 }

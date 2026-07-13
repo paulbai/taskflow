@@ -547,3 +547,87 @@
         font-size: 28px;
     }
 }
+
+/* ── Workspace delete ── */
+.wsDeleteBtn {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-left: auto;
+    transition: all var(--duration-fast) ease;
+}
+
+.wsDeleteBtn:hover {
+    background: rgba(240, 104, 104, 0.1);
+    color: var(--color-error);
+}
+
+.deleteError {
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    background: rgba(240, 104, 104, 0.08);
+    border: 2px solid rgba(240, 104, 104, 0.15);
+    color: var(--color-error);
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.deleteActions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.cancelBtn {
+    padding: 11px 20px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border-default);
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 700;
+    font-family: var(--font-display);
+    cursor: pointer;
+    transition: all var(--duration-fast) ease;
+}
+
+.cancelBtn:hover:not(:disabled) {
+    color: var(--text-primary);
+    border-color: var(--text-tertiary);
+}
+
+.confirmDeleteBtn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 11px 20px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: var(--color-error);
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: var(--font-display);
+    cursor: pointer;
+    transition: all var(--duration-fast) ease;
+}
+
+.confirmDeleteBtn:hover:not(:disabled) {
+    filter: brightness(1.08);
+}
+
+.confirmDeleteBtn:disabled,
+.cancelBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
