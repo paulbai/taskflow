@@ -11,25 +11,32 @@ import { Redis } from '@upstash/redis';
 
 // ── Redis-backed rate limiter (production) ──────────────────────
 
-let redisRatelimit: Ratelimit | null = null;
-
 // Support both direct Upstash env names and Vercel Marketplace KV_* names
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
 const REDIS_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
 
-if (REDIS_URL && REDIS_TOKEN) {
-    const redis = new Redis({
-        url: REDIS_URL,
-        token: REDIS_TOKEN,
-    });
+const redis = REDIS_URL && REDIS_TOKEN
+    ? new Redis({ url: REDIS_URL, token: REDIS_TOKEN })
+    : null;
 
-    redisRatelimit = new Ratelimit({
-        redis,
-        // Default: 10 requests per 60 seconds using sliding window
-        limiter: Ratelimit.slidingWindow(10, '60 s'),
-        analytics: true,
-        prefix: 'taskflow-rl',
-    });
+// One Ratelimit instance per distinct (maxRequests, windowMs) config so
+// every route keeps its own intended limits.
+const redisLimiters = new Map<string, Ratelimit>();
+
+function getRedisLimiter(maxRequests: number, windowMs: number): Ratelimit | null {
+    if (!redis) return null;
+    const key = `${maxRequests}:${windowMs}`;
+    let limiter = redisLimiters.get(key);
+    if (!limiter) {
+        limiter = new Ratelimit({
+            redis,
+            limiter: Ratelimit.slidingWindow(maxRequests, `${windowMs} ms`),
+            analytics: true,
+            prefix: `taskflow-rl:${key}`,
+        });
+        redisLimiters.set(key, limiter);
+    }
+    return limiter;
 }
 
 // ── In-memory fallback (local dev only) ─────────────────────────
@@ -94,9 +101,9 @@ export async function rateLimit(
     config: RateLimitConfig = { maxRequests: 10, windowMs: 60_000 }
 ): Promise<{ success: boolean; remaining: number }> {
     // Use Redis in production
-    if (redisRatelimit) {
-        const key = `${identifier}:${config.maxRequests}:${config.windowMs}`;
-        const result = await redisRatelimit.limit(key);
+    const limiter = getRedisLimiter(config.maxRequests, config.windowMs);
+    if (limiter) {
+        const result = await limiter.limit(identifier);
         return { success: result.success, remaining: result.remaining };
     }
 
