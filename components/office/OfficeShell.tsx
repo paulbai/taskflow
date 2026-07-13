@@ -9,7 +9,9 @@ import { OfficeSidebar } from './OfficeSidebar';
 import { Topbar } from './Topbar';
 import { SearchModal } from './SearchModal';
 import { ShortcutsModal } from './ShortcutsModal';
-import { AiPanel } from '@/components/ai/AiPanel';
+// AI assistant is backlogged — re-enable by restoring <AiPanel /> below
+// and its import (component + /api/ai routes remain in the codebase).
+// import { AiPanel } from '@/components/ai/AiPanel';
 
 function ShellInner({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -96,7 +98,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
             </div>
             <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
             <ShortcutsModal open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
-            <AiPanel />
+            {/* AI assistant backlogged — restore <AiPanel /> to re-enable */}
         </div>
     );
 }
