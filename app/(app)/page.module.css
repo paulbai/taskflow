@@ -76,6 +76,87 @@
     font-family: var(--font-display);
     flex-shrink: 0;
     box-shadow: 0 4px 14px var(--accent-glow);
+    border: none;
+    cursor: pointer;
+    transition: transform var(--duration-fast) ease, filter var(--duration-fast) ease;
+}
+
+.avatarCircle:hover {
+    transform: scale(1.05);
+    filter: brightness(1.05);
+}
+
+/* ── User menu ── */
+.userMenuWrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.userMenuBackdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+}
+
+.userMenu {
+    position: absolute;
+    top: 58px;
+    right: 0;
+    z-index: 41;
+    min-width: 220px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.userMenuInfo {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 4px;
+}
+
+.userMenuName {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.userMenuEmail {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.userMenuSignOut {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 10px;
+    border: none;
+    background: transparent;
+    color: var(--color-error);
+    font-size: 14px;
+    font-weight: 700;
+    font-family: var(--font-display);
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    text-align: left;
+    transition: background var(--duration-fast) ease;
+}
+
+.userMenuSignOut:hover {
+    background: rgba(240, 104, 104, 0.08);
 }
 
 /* ── Join Task Button ── */

@@ -4,11 +4,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { TaskList } from '@/components/tasks/TaskList';
 import { CalendarView } from '@/components/calendar/CalendarView';
 import { WorkspaceView } from '@/components/workspace/WorkspaceView';
-import { Loader2, Timer as TimerIcon, Play, Pause, RotateCw, UserPlus, X } from 'lucide-react';
+import { Loader2, Timer as TimerIcon, Play, Pause, RotateCw, UserPlus, X, LogOut } from 'lucide-react';
 import { Task } from '@/types';
 import { motion } from 'framer-motion';
 import { useAppContext } from '@/components/providers/AppContext';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import styles from './page.module.css';
 
 const FOCUS_TIME = 25 * 60;
@@ -22,6 +22,9 @@ export default function Home() {
 
     // Stats drill-down modal state
     const [statsFilter, setStatsFilter] = useState<'todo' | 'in_progress' | 'done' | null>(null);
+
+    // User menu (sign out)
+    const [showUserMenu, setShowUserMenu] = useState(false);
 
     // Join task modal state
     const [showJoinModal, setShowJoinModal] = useState(false);
@@ -184,8 +187,34 @@ export default function Home() {
                         You have <span className={styles.highlight}>{activeTasks.length} tasks</span> today
                     </h1>
                 </div>
-                <div className={styles.avatarCircle}>
-                    {firstName.charAt(0).toUpperCase()}
+                <div className={styles.userMenuWrap}>
+                    <button
+                        className={styles.avatarCircle}
+                        onClick={() => setShowUserMenu(o => !o)}
+                        aria-label="Account menu"
+                    >
+                        {firstName.charAt(0).toUpperCase()}
+                    </button>
+                    {showUserMenu && (
+                        <>
+                            <div className={styles.userMenuBackdrop} onClick={() => setShowUserMenu(false)} />
+                            <div className={styles.userMenu}>
+                                <div className={styles.userMenuInfo}>
+                                    <div className={styles.userMenuName}>{session?.user?.name || 'Account'}</div>
+                                    {session?.user?.email && (
+                                        <div className={styles.userMenuEmail}>{session.user.email}</div>
+                                    )}
+                                </div>
+                                <button
+                                    className={styles.userMenuSignOut}
+                                    onClick={() => signOut({ callbackUrl: '/signin' })}
+                                >
+                                    <LogOut size={16} />
+                                    Sign out
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
             </header>
 
