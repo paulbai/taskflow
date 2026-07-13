@@ -21,7 +21,7 @@ export default function Home() {
     const { data: session } = useSession();
 
     // Stats drill-down modal state
-    const [statsFilter, setStatsFilter] = useState<'todo' | 'done' | 'all' | null>(null);
+    const [statsFilter, setStatsFilter] = useState<'todo' | 'in_progress' | 'done' | null>(null);
 
     // Join task modal state
     const [showJoinModal, setShowJoinModal] = useState(false);
@@ -151,6 +151,8 @@ export default function Home() {
     };
 
     const activeTasks = tasks.filter(t => t.status !== 'done');
+    const todoTasks = tasks.filter(t => t.status === 'todo');
+    const inProgressTasks = tasks.filter(t => t.status === 'in_progress');
     const completedTasks = tasks.filter(t => t.status === 'done');
 
     const getGreeting = () => {
@@ -248,10 +250,18 @@ export default function Home() {
                 <button
                     className={`${styles.statCard} ${styles.statTodo}`}
                     onClick={() => setStatsFilter('todo')}
-                    aria-label={`View ${activeTasks.length} to-do tasks`}
+                    aria-label={`View ${todoTasks.length} to-do tasks`}
                 >
-                    <div className={styles.statNumber}>{activeTasks.length}</div>
+                    <div className={styles.statNumber}>{todoTasks.length}</div>
                     <div className={styles.statLabel}>To-Do</div>
+                </button>
+                <button
+                    className={`${styles.statCard} ${styles.statTotal}`}
+                    onClick={() => setStatsFilter('in_progress')}
+                    aria-label={`View ${inProgressTasks.length} in-progress tasks`}
+                >
+                    <div className={styles.statNumber}>{inProgressTasks.length}</div>
+                    <div className={styles.statLabel}>In Progress</div>
                 </button>
                 <button
                     className={`${styles.statCard} ${styles.statDone}`}
@@ -260,14 +270,6 @@ export default function Home() {
                 >
                     <div className={styles.statNumber}>{completedTasks.length}</div>
                     <div className={styles.statLabel}>Done</div>
-                </button>
-                <button
-                    className={`${styles.statCard} ${styles.statTotal}`}
-                    onClick={() => setStatsFilter('all')}
-                    aria-label={`View all ${tasks.length} tasks`}
-                >
-                    <div className={styles.statNumber}>{tasks.length}</div>
-                    <div className={styles.statLabel}>Total</div>
                 </button>
             </div>
 
@@ -287,7 +289,7 @@ export default function Home() {
                         >
                             <div className={styles.joinHeader}>
                                 <h2 className={styles.joinTitle}>
-                                    {statsFilter === 'todo' ? 'To-Do tasks' : statsFilter === 'done' ? 'Done tasks' : 'All tasks'}
+                                    {statsFilter === 'todo' ? 'To-Do tasks' : statsFilter === 'in_progress' ? 'In-progress tasks' : 'Done tasks'}
                                 </h2>
                                 <button className={styles.joinClose} onClick={() => setStatsFilter(null)} aria-label="Close">
                                     <X size={18} />
@@ -297,10 +299,10 @@ export default function Home() {
                                 {activeList ? `In "${activeList.name}"` : 'In your current list'}
                             </p>
                             <div className={styles.statsTaskList}>
-                                {(statsFilter === 'todo' ? activeTasks : statsFilter === 'done' ? completedTasks : tasks).length === 0 && (
+                                {(statsFilter === 'todo' ? todoTasks : statsFilter === 'in_progress' ? inProgressTasks : completedTasks).length === 0 && (
                                     <div className={styles.statsTaskEmpty}>Nothing here yet</div>
                                 )}
-                                {(statsFilter === 'todo' ? activeTasks : statsFilter === 'done' ? completedTasks : tasks).map(task => (
+                                {(statsFilter === 'todo' ? todoTasks : statsFilter === 'in_progress' ? inProgressTasks : completedTasks).map(task => (
                                     <div key={task.id} className={styles.statsTaskRow}>
                                         <span
                                             className={styles.statsTaskDot}
