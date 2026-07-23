@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { TaskList } from '@/components/tasks/TaskList';
 import { CalendarView } from '@/components/calendar/CalendarView';
-import { WorkspaceView } from '@/components/workspace/WorkspaceView';
+import { WorkspaceHub } from '@/components/simple/WorkspaceHub';
+import { MyWork, type MyTask } from '@/components/simple/MyWork';
 import { Loader2, Timer as TimerIcon, Play, Pause, RotateCw, UserPlus, X, LogOut } from 'lucide-react';
 import { Task } from '@/types';
 import { motion } from 'framer-motion';
@@ -19,6 +20,9 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const { activeListId, activeList, activeTab, setActiveListId, refreshLists } = useAppContext();
     const { data: session } = useSession();
+
+    // Workspace tasks assigned to me (across every workspace I'm in)
+    const [myWork, setMyWork] = useState<MyTask[]>([]);
 
     // Stats drill-down modal state
     const [statsFilter, setStatsFilter] = useState<'todo' | 'in_progress' | 'done' | null>(null);
@@ -74,6 +78,22 @@ export default function Home() {
         setLoading(true);
         fetchTasks();
     }, [fetchTasks]);
+
+    const fetchMyWork = useCallback(async () => {
+        try {
+            const res = await fetch('/api/my-tasks');
+            if (res.ok) {
+                const data = await res.json();
+                setMyWork(data.tasks || []);
+            }
+        } catch {
+            // keep whatever we already have
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchMyWork();
+    }, [fetchMyWork]);
 
     const addTask = async (title: string) => {
         const res = await fetch(`/api/lists/${activeListId}/tasks`, {
@@ -158,6 +178,15 @@ export default function Home() {
     const inProgressTasks = tasks.filter(t => t.status === 'in_progress');
     const completedTasks = tasks.filter(t => t.status === 'done');
 
+    // Combined counts: personal list tasks + workspace tasks assigned to me
+    const workTodo = myWork.filter(t => t.bucket === 'todo');
+    const workProgress = myWork.filter(t => t.bucket === 'in_progress');
+    const workDone = myWork.filter(t => t.bucket === 'done');
+    const countTodo = todoTasks.length + workTodo.length;
+    const countProgress = inProgressTasks.length + workProgress.length;
+    const countDone = completedTasks.length + workDone.length;
+    const openCount = countTodo + countProgress;
+
     const getGreeting = () => {
         const hour = new Date().getHours();
         if (hour < 12) return 'Good Morning';
@@ -184,7 +213,7 @@ export default function Home() {
                 <div>
                     <p className={styles.greetingText}>{getGreeting()}, {firstName}!</p>
                     <h1 className={styles.taskSummary}>
-                        You have <span className={styles.highlight}>{activeTasks.length} tasks</span> today
+                        You have <span className={styles.highlight}>{openCount} tasks</span> today
                     </h1>
                 </div>
                 <div className={styles.userMenuWrap}>
@@ -279,25 +308,25 @@ export default function Home() {
                 <button
                     className={`${styles.statCard} ${styles.statTodo}`}
                     onClick={() => setStatsFilter('todo')}
-                    aria-label={`View ${todoTasks.length} to-do tasks`}
+                    aria-label={`View ${countTodo} to-do tasks`}
                 >
-                    <div className={styles.statNumber}>{todoTasks.length}</div>
+                    <div className={styles.statNumber}>{countTodo}</div>
                     <div className={styles.statLabel}>To-Do</div>
                 </button>
                 <button
                     className={`${styles.statCard} ${styles.statTotal}`}
                     onClick={() => setStatsFilter('in_progress')}
-                    aria-label={`View ${inProgressTasks.length} in-progress tasks`}
+                    aria-label={`View ${countProgress} in-progress tasks`}
                 >
-                    <div className={styles.statNumber}>{inProgressTasks.length}</div>
+                    <div className={styles.statNumber}>{countProgress}</div>
                     <div className={styles.statLabel}>In Progress</div>
                 </button>
                 <button
                     className={`${styles.statCard} ${styles.statDone}`}
                     onClick={() => setStatsFilter('done')}
-                    aria-label={`View ${completedTasks.length} done tasks`}
+                    aria-label={`View ${countDone} done tasks`}
                 >
-                    <div className={styles.statNumber}>{completedTasks.length}</div>
+                    <div className={styles.statNumber}>{countDone}</div>
                     <div className={styles.statLabel}>Done</div>
                 </button>
             </div>
@@ -325,12 +354,24 @@ export default function Home() {
                                 </button>
                             </div>
                             <p className={styles.joinDesc}>
-                                {activeList ? `In "${activeList.name}"` : 'In your current list'}
+                                Your tasks{activeList ? ` in "${activeList.name}"` : ''} and across your workspaces
                             </p>
                             <div className={styles.statsTaskList}>
-                                {(statsFilter === 'todo' ? todoTasks : statsFilter === 'in_progress' ? inProgressTasks : completedTasks).length === 0 && (
+                                {(statsFilter === 'todo' ? todoTasks : statsFilter === 'in_progress' ? inProgressTasks : completedTasks).length === 0 &&
+                                    (statsFilter === 'todo' ? workTodo : statsFilter === 'in_progress' ? workProgress : workDone).length === 0 && (
                                     <div className={styles.statsTaskEmpty}>Nothing here yet</div>
                                 )}
+                                {(statsFilter === 'todo' ? workTodo : statsFilter === 'in_progress' ? workProgress : workDone).map(wt => (
+                                    <div key={wt.rowId} className={styles.statsTaskRow}>
+                                        <span className={styles.statsTaskDot} data-status={wt.bucket} />
+                                        <span className={`${styles.statsTaskTitle} ${wt.bucket === 'done' ? styles.statsTaskTitleDone : ''}`}>
+                                            {wt.title}
+                                        </span>
+                                        <span className={styles.statsTaskMeta}>
+                                            {wt.workspaceIcon} {wt.workspaceName}
+                                        </span>
+                                    </div>
+                                ))}
                                 {(statsFilter === 'todo' ? todoTasks : statsFilter === 'in_progress' ? inProgressTasks : completedTasks).map(task => (
                                     <div key={task.id} className={styles.statsTaskRow}>
                                         <span
@@ -358,17 +399,20 @@ export default function Home() {
                     transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                 >
                     {activeTab === 'home' && (
-                        <TaskList
-                            tasks={tasks}
-                            onAddTask={addTask}
-                            onToggleTask={toggleTask}
-                            onUpdateTask={updateTask}
-                            onDeleteTask={deleteTask}
-                        />
+                        <>
+                            <MyWork tasks={myWork} onChanged={fetchMyWork} />
+                            <TaskList
+                                tasks={tasks}
+                                onAddTask={addTask}
+                                onToggleTask={toggleTask}
+                                onUpdateTask={updateTask}
+                                onDeleteTask={deleteTask}
+                            />
+                        </>
                     )}
 
                     {activeTab === 'boards' && (
-                        <WorkspaceView />
+                        <WorkspaceHub onNeedsRefresh={fetchMyWork} />
                     )}
 
                     {activeTab === 'calendar' && (
